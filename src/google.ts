@@ -2,6 +2,7 @@ import type { NextApiRequest } from "next";
 import { google as googleapis } from "googleapis";
 import Cookies from "cookies";
 import db from "@/db";
+import dayjs from "@/dayjs";
 import getUrls from "get-urls";
 
 import { rrulestr } from "rrule";
@@ -83,7 +84,6 @@ class Google {
       nextPageToken,
       events: items
         .map(({ recurrence, ...rest }) => {
-          console.log(rest);
           let recurring = null;
           if (recurrence) {
             // FIXME deal with EXDATE and rrule.js
@@ -148,6 +148,7 @@ function parseEvent({
       url: hangoutLink,
     };
   }
+
   return {
     id,
     created,
@@ -157,24 +158,15 @@ function parseEvent({
     urls,
     conference,
     recurrence,
-    start: start.dateTime,
-    end: end.dateTime,
-  };
-}
-
-function promisify(func: any) {
-  return function (...args: any) {
-    return new Promise((resolve, reject) => {
-      function callback(error: any, data: any, response: any) {
-        if (error) {
-          reject(error);
-        } else {
-          //console.log(limits(response.headers), uid, args[0]);
-          resolve({ data, response });
-        }
-      }
-      const parameters = [...args, callback];
-      func.apply(func, parameters);
-    });
+    start: {
+      date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
+      time: start.dateTime ? dayjs(start.dateTime).format("HH:MM") : null,
+      timeZone: start.timeZone,
+    },
+    end: {
+      date: dayjs(end.date || end.dateTime).format("YYYY-MM-DD"),
+      time: end.dateTime ? dayjs(end.dateTime).format("HH:MM") : null,
+      timeZone: end.timeZone,
+    },
   };
 }

@@ -6,17 +6,17 @@ export function useEvents() {
   const { data = { nextPageToken: null, events: [] }, ...rest } =
     useSWR("/api/events");
 
-  const events = new Map();
+  let events = new Map();
   data.events.forEach((event) => {
     if (event.recurrence) {
       const rule = rrulestr(event.recurrence.join("\n"));
-      const occurences = rule
+      rule
         .all(function (date, i) {
           return i < 10;
         })
         .forEach((date) => {
-          const start = dayjs(event.start);
-          const end = dayjs(event.end);
+          const start = dayjs(`${event.start.date}T${event.start.time}`);
+          const end = dayjs(`${event.end.date}T${event.end.time}`);
           const generatedStart = dayjs([
             date.getFullYear(),
             date.getMonth(),
@@ -33,7 +33,27 @@ export function useEvents() {
           events = set(events, event, generatedStart, generatedEnd);
         });
     } else {
-      events = set(events, event);
+      let start = dayjs(event.start.date).startOf("day");
+      const end = dayjs(event.end.date).endOf("day");
+      const diff = end.diff(start, "day");
+      event.isAllDay = true;
+      if (diff > 0) {
+        for (let i = 1; i < diff; i += 1) {
+          events = set(
+            events,
+            event,
+            start.clone().startOf("day"),
+            start.clone().endOf("day")
+          );
+          start = start.add(24, "hour");
+        }
+      } else {
+        events = set(events, {
+          ...event,
+          start,
+          end,
+        });
+      }
     }
   });
   console.log(events);

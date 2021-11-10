@@ -59,6 +59,7 @@ interface IEvent {
     url?: string;
   };
   isOff?: boolean;
+  isAllDay?: boolean;
   start?: typeof dayjs;
   end?: typeof dayjs;
 }
@@ -150,6 +151,7 @@ function Event({
   summary,
   conference,
   recurrence,
+  isAllDay,
   isNext = false,
   style,
 }: IEvent & { style?: CSSProperties; isNext?: boolean }) {
@@ -171,8 +173,9 @@ function Event({
 
   const { query } = useRouter();
 
+  const AsComponent = conference?.url ? Link : "div";
   return (
-    <Link href={conference?.url} target="_blank" rel="noopener">
+    <AsComponent href={conference?.url} target="_blank" rel="noopener">
       <a
         className={
           isToday
@@ -191,11 +194,13 @@ function Event({
       >
         {start && end && (
           <h4 className="flex justify-between items-center">
-            <div className="text-gray-500 flex items-center gap-2">
-              {start.format(query.format === "24h" ? "HH:mm" : "hh:mma")} -{" "}
-              {end.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
-              {!!recurrence && <RecurringIcon size="1em" />}
-            </div>
+            {!isAllDay && (
+              <div className="text-gray-500 flex items-center gap-2">
+                {start.format(query.format === "24h" ? "HH:mm" : "hh:mma")} -{" "}
+                {end.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
+                {!!recurrence && <RecurringIcon size="1em" />}
+              </div>
+            )}
             <div className="flex items-center gap-2">
               {isNext && (
                 <div className="bg-rose-500 rounded-full px-2 text-sm text-black">
@@ -222,7 +227,7 @@ function Event({
           <h4>{summary}</h4>
         </div>
       </a>
-    </Link>
+    </AsComponent>
   );
 }
 
@@ -449,7 +454,7 @@ const OtherDay = forwardRef(
                     isWeekend || isOff,
                 }
               : {
-                  "h-[60vh] border-none": isToday,
+                  "min-h-[60vh] border-none": isToday,
                 },
             className
           )}
@@ -457,7 +462,7 @@ const OtherDay = forwardRef(
         >
           <h3
             className={cn(
-              "self-start backdrop-blur sticky top-0 flex items-start z-10 px-4",
+              "self-start backdrop-blur sticky top-0 flex items-start z-10 px-4 w-full",
               {
                 "text-4xl font-black text-purple-500 space-x-2 pt-2": isToday,
                 "w-20 justify-between": !isToday,
