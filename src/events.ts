@@ -2,12 +2,32 @@ import useSWR from "swr";
 import dayjs from "@/dayjs";
 import { rrulestr } from "rrule";
 
+export interface IEvent {
+  id: string;
+  summary: string;
+  conference?: {
+    type: ConferenceService;
+    url?: string;
+  };
+  isOff?: boolean;
+  recurrence?: string[];
+  isAllDay?: boolean;
+  start?: typeof dayjs;
+  end?: typeof dayjs;
+}
+
+export enum ConferenceService {
+  Zoom = "zoom",
+  GoogleMeet = "meet",
+  MicrosoftTeams = "teams",
+}
+
 export function useEvents() {
   const { data = { nextPageToken: null, events: [] }, ...rest } =
     useSWR("/api/events");
 
   let events = new Map();
-  data.events.forEach((event) => {
+  data.events.forEach((event: any) => {
     if (event.recurrence) {
       const rule = rrulestr(event.recurrence.join("\n"));
       rule
@@ -63,7 +83,7 @@ export function useEvents() {
   };
 }
 
-function set(events, event, start, end) {
+function set(events: Map<any, any>, event: any, start?: any, end?: any) {
   start = start || event.start;
   end = end || event.end;
 

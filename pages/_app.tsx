@@ -1,9 +1,11 @@
 import "../styles/globals.css";
+import { useRouter } from "next/router";
 import { SWRConfig } from "swr";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
   return (
     <>
       <Head>

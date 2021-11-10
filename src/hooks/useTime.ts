@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useCallback, useState } from "react";
 import dayjs from "@/dayjs";
 import useInterval from "use-interval";

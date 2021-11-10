@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { NextApiRequest } from "next";
 import { google as googleapis } from "googleapis";
 import Cookies from "cookies";
@@ -23,6 +24,7 @@ const sessionCookieName =
     : "next-auth.session-token";
 
 export async function createGoogleFromReq(req: NextApiRequest) {
+  // @ts-ignore
   const cookies = new Cookies(req);
   const sessionToken = cookies.get(sessionCookieName);
   if (!sessionToken) {
@@ -83,11 +85,13 @@ class Google {
     return {
       nextPageToken,
       events: items
-        .map(({ recurrence, ...rest }) => {
+        .map(({ recurrence, ...rest }: any) => {
           let recurring = null;
           if (recurrence) {
             // FIXME deal with EXDATE and rrule.js
-            recurrence = recurrence.filter((str) => !str.startsWith("EXDATE"));
+            recurrence = recurrence.filter(
+              (str: string) => !str.startsWith("EXDATE")
+            );
             recurring = rrulestr(recurrence.join("\n"));
           }
           return {

@@ -1,4 +1,4 @@
-import { useEvents } from "@/events";
+// @ts-nocheck
 import Link from "next/link";
 import {
   useState,
@@ -13,6 +13,8 @@ import { useRouter } from "next/router";
 import cn from "classnames";
 import dayjs from "@/dayjs";
 import { useNow } from "@/hooks";
+import { useEvents, ConferenceService, IEvent } from "@/events";
+// @ts-ignore
 import { formatDuration } from "@boertel/duration";
 
 import {
@@ -24,12 +26,6 @@ import {
 
 function range(start: number, end: number) {
   return Array.from({ length: end - start }, (_, index) => start + index);
-}
-
-enum ConferenceService {
-  Zoom = "zoom",
-  GoogleMeet = "meet",
-  MicrosoftTeams = "teams",
 }
 
 function ConferenceIcon({
@@ -51,25 +47,12 @@ function ConferenceIcon({
   }
 }
 
-interface IEvent {
-  id: string;
-  summary: string;
-  conference?: {
-    type: ConferenceService;
-    url?: string;
-  };
-  isOff?: boolean;
-  isAllDay?: boolean;
-  start?: typeof dayjs;
-  end?: typeof dayjs;
-}
-
 export default function Home() {
   const { events } = useEvents();
   return <Events events={events} />;
 }
 
-function Events({ events }) {
+function Events({ events }: { events: Map<string, IEvent[]> }) {
   const now = useNow();
 
   const days = range(0, 12 * 7);
@@ -83,6 +66,7 @@ function Events({ events }) {
         }}
       >
         {days.map((index) => {
+          // @ts-ignore
           const current = now.add(index, "days");
           const key = current.format("YYYY-MM-DD");
           const currentEvents = events.get(key) || [];
@@ -100,13 +84,16 @@ function Events({ events }) {
               {currentEvents.map((event: IEvent, index: number) => {
                 let isNext =
                   current.isToday() &&
+                  // @ts-ignore
                   now.isBetween(
                     index > 0
                       ? currentEvents[index - 1]?.start
-                      : now.startOf("day"),
+                      : // @ts-ignore
+                        now.startOf("day"),
                     event.start
                   );
                 if (event.start && event.end && !inMeetingCurrently) {
+                  // @ts-ignore
                   inMeetingCurrently = now.isBetween(
                     event.start,
                     event.end,
@@ -126,6 +113,7 @@ function Events({ events }) {
                       <RecurringIcon className="text-purple-500" size="1em" />
                     )}
                     {current.isToday() &&
+                      // @ts-ignore
                       now.isAfter(event.end) &&
                       index === currentEvents.length - 1 && <NowLine />}
                   </Fragment>
@@ -165,10 +153,14 @@ function Event({
    * isPast:                                      now.isAfter(end)
    *
    */
+  // @ts-ignore
   const isNow = now.isBetween(start, end, null, "[]");
+  // @ts-ignore
   const isPast = now.isAfter(end);
+  // @ts-ignore
   const isFuture = now.isBefore(start);
 
+  // @ts-ignore
   const isToday = start ? start.isToday() : false;
 
   const { query } = useRouter();
@@ -196,7 +188,10 @@ function Event({
           <h4 className="flex justify-between items-center">
             {!isAllDay && (
               <div className="text-gray-500 flex items-center gap-2">
-                {start.format(query.format === "24h" ? "HH:mm" : "hh:mma")} -{" "}
+                {/* @ts-ignore */}
+                {start.format(
+                  query.format === "24h" ? "HH:mm" : "hh:mma"
+                )} - {/* @ts-ignore */}
                 {end.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
                 {!!recurrence && <RecurringIcon size="1em" />}
               </div>
@@ -204,9 +199,9 @@ function Event({
             <div className="flex items-center gap-2">
               {isNext && (
                 <div className="bg-rose-500 rounded-full px-2 text-sm text-black">
-                  in{" "}
+                  in {/* @ts-ignore */}
                   {formatDuration(start.diff(now, "seconds"), {
-                    format: (value, key) =>
+                    format: (value: number, key: string) =>
                       ["minute", "hour"].includes(key)
                         ? `${value} ${value === 1 ? key : `${key}s`}`
                         : "",
@@ -268,7 +263,7 @@ const Pill = forwardRef(
     }: {
       children: ReactNode;
       className?: string;
-      onClick: (evt) => void;
+      onClick: (evt: React.SyntheticEvent) => void;
       style?: CSSProperties;
     },
     ref
@@ -424,7 +419,9 @@ const OtherDay = forwardRef(
 
     const isToday = current.isToday();
     const isTomorrow = current.isTomorrow();
+    // @ts-ignore
     const isWeekend = current.isWeekend();
+    // @ts-ignore
     const isThisWeek = current.isThisWeek();
 
     const isPast = current.isBefore(dayjs().startOf("day"));

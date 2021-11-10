@@ -1,4 +1,4 @@
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import arraySupport from "dayjs/plugin/arraySupport";
 import duration from "dayjs/plugin/duration";
@@ -22,18 +22,21 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 dayjs.extend(function isWeekend(o, c, d) {
+  // @ts-ignore
   c.prototype.isWeekend = function () {
     return this.day() === 0 || this.day() === 6;
   };
 });
 
 dayjs.extend(function isThisMonth(o, c, d) {
+  // @ts-ignore
   c.prototype.isThisMonth = function () {
     return this.format("YYYY-MM") == d().format("YYYY-MM");
   };
 });
 
 dayjs.extend(function isThisWeek(o, c, d) {
+  // @ts-ignore
   c.prototype.isThisWeek = function () {
     return this.format("YYYY-WW") == d().format("YYYY-WW");
   };
