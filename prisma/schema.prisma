@@ -58,14 +58,13 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
-model Event {
-    id          String @id @default(cuid())
-    start       DateTime
-    end         DateTime
-    accountId   String
-    status      String
-    summary     String
-    description String
-    account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-}
+// model Event {
+//     id          String @id @default(cuid())
+//     start       DateTime
+//     end         DateTime
+//     accountId   String
+//     status      String
+//     summary     String
+//     description String
+//     account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+// }
