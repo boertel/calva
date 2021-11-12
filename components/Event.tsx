@@ -2,13 +2,13 @@
 import { CSSProperties } from "react";
 import cn from "classnames";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { IEvent } from "@/events";
 // @ts-ignore
 import { formatDuration } from "@boertel/duration";
 import { useNow } from "@/hooks";
 import { RecurringIcon } from "@/icons";
 import { ConferenceIcon } from "@/ui";
+import { useSettings } from "components/Settings";
 
 export default function Event({
   end,
@@ -30,6 +30,11 @@ export default function Event({
    * isPast:                                      now.isAfter(end)
    *
    */
+  const { timeFormat } = useSettings();
+
+  if (now === null) {
+    return null;
+  }
   // @ts-ignore
   const isNow = now.isBetween(start, end, null, "[]");
   // @ts-ignore
@@ -39,8 +44,6 @@ export default function Event({
 
   // @ts-ignore
   const isToday = start ? start.isToday() : false;
-
-  const { query } = useRouter();
 
   const AsComponent = conference?.url ? Link : "div";
   return (
@@ -66,10 +69,8 @@ export default function Event({
             {!isAllDay && (
               <div className="text-gray-500 flex items-center gap-2">
                 {/* @ts-ignore */}
-                {start.format(
-                  query.format === "24h" ? "HH:mm" : "hh:mma"
-                )} - {/* @ts-ignore */}
-                {end.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
+                {start.format(timeFormat)} – {/* @ts-ignore */}
+                {end.format(timeFormat)}
                 {!!recurrence && <RecurringIcon size="1em" />}
               </div>
             )}

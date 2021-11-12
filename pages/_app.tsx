@@ -1,14 +1,13 @@
-import { useRouter } from "next/router";
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode } from "react";
 import { SWRConfig } from "swr";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 import { AuthProvider, useAuthStatus, AuthStatus } from "../AuthStatus";
+import { SettingsProvider } from "components/Settings";
 
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
   return (
     <>
       <Head>
@@ -16,7 +15,9 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <AuthProvider>
         <SWRWithAuth>
-          <Component {...pageProps} />
+          <SettingsProvider>
+            <Component {...pageProps} />
+          </SettingsProvider>
         </SWRWithAuth>
       </AuthProvider>
     </>
@@ -24,7 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 
 function SWRWithAuth({ children }: { children: ReactNode }) {
-  const [authStatus, setAuthStatus] = useAuthStatus();
+  const [, setAuthStatus] = useAuthStatus();
   return (
     <SWRConfig
       value={{

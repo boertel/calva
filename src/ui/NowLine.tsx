@@ -9,19 +9,22 @@ export function NowLine({ style }: { style?: CSSProperties }) {
     <>
       <div
         className={cn(
-          "w-full flex items-center text-red-500 pr-4 transition-opacity group text-opacity-40 hover:text-opacity-100"
+          "w-full flex items-center text-red-500 pr-4 transition-opacity text-opacity-40 hover:text-opacity-100"
         )}
         style={style}
       >
         <div
           id="now"
-          className="relative bg-red-500 bg-opacity-60 group-hover:bg-opacity-100 w-full h-[2px]"
+          className="relative bg-red-500 bg-opacity-60 w-full h-[2px]"
         />
         <div className="pl-2">
           {dayjs().format(query.format === "24h" ? "HH:mm" : "hh:mma")}
         </div>
       </div>
       <style jsx>{`
+        div:hover #now {
+          opacity: 100;
+        }
         #now::before {
           content: " ";
           position: absolute;

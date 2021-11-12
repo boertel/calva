@@ -2,7 +2,8 @@
 import { useEffect, useCallback, useState } from "react";
 import dayjs from "@/dayjs";
 import useInterval from "use-interval";
-export function useEveryMinute(callback) {
+
+export function useEveryMinute(callback, immediate?: boolean) {
   const [onTheMinute, setOnTheMinute] = useState<number>(
     (60 - new Date().getSeconds()) * 1000
   );
@@ -11,10 +12,14 @@ export function useEveryMinute(callback) {
     callback();
   }, [callback]);
 
-  useInterval(() => {
-    _callback();
-    setOnTheMinute(60 * 1000);
-  }, onTheMinute);
+  useInterval(
+    () => {
+      _callback();
+      setOnTheMinute(60 * 1000);
+    },
+    onTheMinute,
+    immediate
+  );
 }
 
 export interface Time {
@@ -53,11 +58,12 @@ export function useMinutes(): number {
 }
 
 export function useNow() {
-  const [now, setNow] = useState<typeof dayjs>(dayjs());
+  const [now, setNow] = useState<typeof dayjs | null>(null);
   useEveryMinute(
     useCallback(() => {
       setNow(dayjs());
-    }, [])
+    }, []),
+    true
   );
   return now;
 }

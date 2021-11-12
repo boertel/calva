@@ -46,6 +46,10 @@ function Events({
 
   const days = range(0, 12 * 7);
 
+  if (now === null) {
+    return null;
+  }
+
   return (
     <ul
       style={{
@@ -60,6 +64,10 @@ function Events({
         const key = current.format("YYYY-MM-DD");
         const currentEvents = events.get(key) || [];
 
+        const hasRecurringMeetings = !!currentEvents.find(
+          ({ recurrence }) => !!recurrence
+        );
+
         let inMeetingCurrently = false;
 
         return (
@@ -70,6 +78,9 @@ function Events({
             day={current.date()}
             isOff={!!currentEvents.find(({ isOff }) => isOff)}
           >
+            {hasRecurringMeetings && !current.isToday() && (
+              <RecurringIcon className="text-purple-500" size="1em" />
+            )}
             {currentEvents.map((event: IEvent, index: number) => {
               let isNext =
                 current.isToday() &&
@@ -93,10 +104,8 @@ function Events({
               return (
                 <Fragment key={event.id}>
                   {isNext && !inMeetingCurrently && <NowLine />}
-                  {current.isToday() || !event.recurrence ? (
+                  {(current.isToday() || !event.recurrence) && (
                     <Event isNext={!inMeetingCurrently && isNext} {...event} />
-                  ) : (
-                    <RecurringIcon className="text-purple-500" size="1em" />
                   )}
                   {current.isToday() &&
                     // @ts-ignore
