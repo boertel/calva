@@ -66,10 +66,15 @@ class Google {
       process.env.GOOGLE_CLIENT_SECRET
     );
     auth.on("tokens", async (tokens) => {
-      console.log("TOKEN", tokens);
       let data = {};
       if (tokens.refresh_token) {
         data.refresh_token = tokens.refresh_token;
+      }
+      if (tokens.id_token) {
+        data.id_token = tokens.id_token;
+      }
+      if (tokens.expiry_date) {
+        data.expires_at = tokens.expiry_date;
       }
       data.access_token = tokens.access_token;
       if (Object.keys(data).length) {
