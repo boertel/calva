@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@/dayjs": ["src/dayjs"],
+      "@/ui": ["src/ui"],
       "@/hooks": ["src/hooks"],
       "@/google": ["src/google"],
       "@/icons": ["src/icons"],
