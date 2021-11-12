@@ -40,7 +40,7 @@ export async function createGoogleFromReq(req: NextApiRequest) {
     },
   });
 
-  const googleAccount = user.accounts.find(
+  const googleAccount = user?.accounts?.find(
     ({ provider }: { provider: string }) => provider === "google"
   );
   if (!googleAccount) {
@@ -64,6 +64,13 @@ class Google {
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET
     );
+    auth.on("tokens", (tokens) => {
+      if (tokens.refresh_token) {
+        // store the refresh_token in my database!
+        console.log("TOKEN R", tokens.refresh_token);
+      }
+      console.log("TOKEN", tokens.access_token);
+    });
     auth.setCredentials({ access_token: token, refresh_token: refresh_token });
     this.calendar = googleapis.calendar({ version: "v3", auth });
     ["events"].forEach((resource) => {
@@ -163,13 +170,21 @@ function parseEvent({
     conference,
     recurrence,
     start: {
-      date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
-      time: start.dateTime ? dayjs(start.dateTime).format("HH:MM") : null,
+      date: dayjs(start.date || start.dateTime)
+        .tz(start.timeZone)
+        .format("YYYY-MM-DD"),
+      time: start.dateTime
+        ? dayjs(start.dateTime).tz(start.timeZone).format("HH:mm")
+        : null,
       timeZone: start.timeZone,
     },
     end: {
-      date: dayjs(end.date || end.dateTime).format("YYYY-MM-DD"),
-      time: end.dateTime ? dayjs(end.dateTime).format("HH:MM") : null,
+      date: dayjs(end.date || end.dateTime)
+        .tz(end.timeZone)
+        .format("YYYY-MM-DD"),
+      time: end.dateTime
+        ? dayjs(end.dateTime).tz(end.timeZone).format("HH:mm")
+        : null,
       timeZone: end.timeZone,
     },
   };

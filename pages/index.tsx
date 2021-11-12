@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import {
   useState,
@@ -16,12 +17,15 @@ import { useNow } from "@/hooks";
 import { useEvents, ConferenceService, IEvent } from "@/events";
 // @ts-ignore
 import { formatDuration } from "@boertel/duration";
+import { useAuthStatus, AuthStatus } from "../AuthStatus";
 
 import {
+  GoogleLogo,
   RecurringIcon,
   ZoomIcon,
   GoogleMeetIcon,
   MicrosoftTeamsIcon,
+  CheckCircleIcon,
 } from "@/icons";
 
 function range(start: number, end: number) {
@@ -49,81 +53,127 @@ function ConferenceIcon({
 
 export default function Home() {
   const { events } = useEvents();
-  return <Events events={events} />;
+  const [authStatus] = useAuthStatus();
+  const isAuthenticated = authStatus !== AuthStatus.Unauthenticated;
+  return (
+    <main className="flex flex-col justify-center">
+      <Events
+        events={events}
+        className={cn({ "opacity-30": !isAuthenticated })}
+      />
+      {authStatus !== AuthStatus.Authenticated && (
+        <footer
+          className={cn(
+            "sticky bottom-0 z-20 mx-auto max-w-prose flex flex-col items-center justify-center p-8 space-y-8 pb-16 opacity-0 transition-opacity duration-700",
+            {
+              "opacity-100": !isAuthenticated,
+            }
+          )}
+        >
+          <h1 className="text-9xl font-black text-center">calva</h1>
+          <h2 className="text-4xl font-bold text-center pb-10">
+            a calendar for the rest of us
+          </h2>
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <li className="flex justify-center items-center text-center border-4 p-6 border-purple-500 border-opacity-30 transition-colors hover:border-opacity-100 rounded-xl bg-black bg-opacity-80">
+              <h3 className="">Forget the past, focus on the present</h3>
+            </li>
+            <li className="flex justify-center items-center text-center border-4 p-6 border-purple-500 border-opacity-30 transition-colors hover:border-opacity-100 rounded-xl bg-black bg-opacity-80">
+              <h3 className="">One click to join</h3>
+            </li>
+            <li className="flex justify-center items-center text-center border-4 p-6 border-purple-500 border-opacity-30 transition-colors hover:border-opacity-100 rounded-xl bg-black bg-opacity-80">
+              <h3 className="">Quick overview of what is coming next</h3>
+            </li>
+          </ul>
+          <LoginButton />
+        </footer>
+      )}
+    </main>
+  );
 }
 
-function Events({ events }: { events: Map<string, IEvent[]> }) {
+function Events({
+  events,
+  className,
+}: {
+  className?: string;
+  events: Map<string, IEvent[]>;
+}) {
   const now = useNow();
 
   const days = range(0, 12 * 7);
 
   return (
-    <main className="flex justify-center">
-      <ul
-        style={{
-          display: "grid",
-          gridTemplateColumns: "max-content 65ch max-content",
-        }}
-      >
-        {days.map((index) => {
-          // @ts-ignore
-          const current = now.add(index, "days");
-          const key = current.format("YYYY-MM-DD");
-          const currentEvents = events.get(key) || [];
+    <ul
+      style={{
+        display: "grid",
+        gridTemplateColumns: "max-content minmax(300px, 65ch) max-content",
+      }}
+      className={className}
+    >
+      {days.map((index) => {
+        // @ts-ignore
+        const current = now.add(index, "days");
+        const key = current.format("YYYY-MM-DD");
+        const currentEvents = events.get(key) || [];
 
-          let inMeetingCurrently = false;
+        let inMeetingCurrently = false;
 
-          return (
-            <Day
-              key={key}
-              year={current.year()}
-              month={current.month()}
-              day={current.date()}
-              isOff={!!currentEvents.find(({ isOff }) => isOff)}
-            >
-              {currentEvents.map((event: IEvent, index: number) => {
-                let isNext =
-                  current.isToday() &&
-                  // @ts-ignore
-                  now.isBetween(
-                    index > 0
-                      ? currentEvents[index - 1]?.start
-                      : // @ts-ignore
-                        now.startOf("day"),
-                    event.start
-                  );
-                if (event.start && event.end && !inMeetingCurrently) {
-                  // @ts-ignore
-                  inMeetingCurrently = now.isBetween(
-                    event.start,
-                    event.end,
-                    null,
-                    "[]"
-                  );
-                }
-                return (
-                  <Fragment key={event.id}>
-                    {isNext && !inMeetingCurrently && <NowLine />}
-                    {current.isToday() || !event.recurrence ? (
-                      <Event
-                        isNext={!inMeetingCurrently && isNext}
-                        {...event}
-                      />
-                    ) : (
-                      <RecurringIcon className="text-purple-500" size="1em" />
-                    )}
-                    {current.isToday() &&
-                      // @ts-ignore
-                      now.isAfter(event.end) &&
-                      index === currentEvents.length - 1 && <NowLine />}
-                  </Fragment>
+        return (
+          <Day
+            key={key}
+            year={current.year()}
+            month={current.month()}
+            day={current.date()}
+            isOff={!!currentEvents.find(({ isOff }) => isOff)}
+          >
+            {currentEvents.map((event: IEvent, index: number) => {
+              let isNext =
+                current.isToday() &&
+                // @ts-ignore
+                now.isBetween(
+                  index > 0
+                    ? currentEvents[index - 1]?.start
+                    : // @ts-ignore
+                      now.startOf("day"),
+                  event.start
                 );
-              })}
-            </Day>
-          );
-        })}
-      </ul>
-    </main>
+              if (event.start && event.end && !inMeetingCurrently) {
+                // @ts-ignore
+                inMeetingCurrently = now.isBetween(
+                  event.start,
+                  event.end,
+                  null,
+                  "[]"
+                );
+              }
+              return (
+                <Fragment key={event.id}>
+                  {isNext && !inMeetingCurrently && <NowLine />}
+                  {current.isToday() || !event.recurrence ? (
+                    <Event isNext={!inMeetingCurrently && isNext} {...event} />
+                  ) : (
+                    <RecurringIcon className="text-purple-500" size="1em" />
+                  )}
+                  {current.isToday() &&
+                    // @ts-ignore
+                    now.isAfter(event.end) &&
+                    index === currentEvents.length - 1 && (
+                      <>
+                        <NowLine />
+                        <button className="mt-20 border-2 border-green-500 bg-green-500 hover:text-green-500 bg-opacity-0 hover:bg-opacity-20 rounded-md p-4 flex items-center justify-center gap-2">
+                          <CheckCircleIcon size="1em" />
+                          <div className="text-white">Done for the day!</div>
+                        </button>
+                      </>
+                    )}
+                </Fragment>
+              );
+            })}
+          </Day>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -241,7 +291,7 @@ function Day({ year, month, day, isOff = false, children }: DayProps) {
   if (current.isToday()) {
     return (
       <Today year={year} month={month} day={day} isOff={isOff}>
-        {children}
+        <div className="flex flex-col flex-grow">{children}</div>
       </Today>
     );
   } else {
@@ -363,7 +413,9 @@ function Today({ year, month, day, children }: DayProps) {
         day={day}
         ref={focusOnLoad}
       >
-        <div className="relative h-full my-6">{children}</div>
+        <div className="relative h-full my-6 flex flex-col justify-between">
+          {children}
+        </div>
       </OtherDay>
       <Annotation
         style={{ gridColumn: 3 }}
@@ -441,14 +493,12 @@ const OtherDay = forwardRef(
         <li
           style={{ gridColumn: 2, ...style }}
           className={cn(
-            "relative flex no-underline border-gray-800 bg-transparent transition-colors rounded-none",
+            "relative flex no-underline border-gray-800 bg-transparent transition-colors rounded-none group",
             current.date() === 1 ? "border-t-4 border-gray-600" : "border-t",
             !isToday
               ? {
                   "py-4 items-center": !isToday,
                   "opacity-30": isPast,
-                  "text-white text-opacity-20 hover:text-opacity-100":
-                    isWeekend || isOff,
                 }
               : {
                   "min-h-[60vh] border-none": isToday,
@@ -463,6 +513,8 @@ const OtherDay = forwardRef(
               {
                 "text-4xl font-black text-purple-500 space-x-2 pt-2": isToday,
                 "w-20 justify-between": !isToday,
+                "text-white text-opacity-20 group-hover:text-opacity-100":
+                  isWeekend || isOff,
               }
             )}
           >
@@ -511,5 +563,53 @@ function Annotation({
     >
       {children}
     </li>
+  );
+}
+
+function LoginButton() {
+  return (
+    <>
+      <button
+        onClick={() => signIn("google")}
+        className="bg-white relative flex text-black justify-center items-center px-6 py-2 rounded-md space-x-2 hover:bg-white"
+      >
+        <GoogleLogo className="text-4xl" />
+        <span>Login with Google</span>
+      </button>
+      <style jsx>{`
+        @keyframes pulse-scale {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.015);
+          }
+        }
+
+        button:before {
+          content: " ";
+          position: absolute;
+          inset: -20px;
+          transform: scale(0.7);
+          z-index: -1;
+
+          box-shadow: inset 0 0 12px 12px black, inset 0 0 3px 2px black;
+          background: rgb(205, 56, 47);
+          background: linear-gradient(
+            115deg,
+            rgba(205, 56, 47, 1) 0%,
+            rgba(229, 150, 51, 1) 42%,
+            rgba(72, 154, 74, 1) 74%,
+            rgba(63, 109, 232, 1) 89%
+          );
+          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:hover:before {
+          transform: scale(1);
+        }
+      `}</style>
+    </>
   );
 }

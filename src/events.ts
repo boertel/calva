@@ -29,30 +29,22 @@ export function useEvents() {
   let events = new Map();
   data.events.forEach((event: any) => {
     if (event.recurrence) {
+      console.log(event.recurrence.join("\n"));
       const rule = rrulestr(event.recurrence.join("\n"));
       rule
         .all(function (date, i) {
           return i < 10;
         })
         .forEach((date) => {
-          const start = dayjs(`${event.start.date}T${event.start.time}`);
-          const end = dayjs(`${event.end.date}T${event.end.time}`);
-          const generatedStart = dayjs([
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            start.hour(),
-            start.minute(),
-            start.second(),
-          ]);
-          const generatedEnd = generatedStart
-            .clone()
-            .hour(end.hour())
-            .minute(end.minute())
-            .second(end.second());
+          const generatedStart = dayjs(
+            `${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`
+          );
+          const generatedEnd = dayjs(
+            `${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`
+          );
           events = set(events, event, generatedStart, generatedEnd);
         });
-    } else {
+    } else if (!event.start.time || !event.start.time) {
       let start = dayjs(event.start.date).startOf("day");
       const end = dayjs(event.end.date).endOf("day");
       const diff = end.diff(start, "day");
@@ -74,6 +66,13 @@ export function useEvents() {
           end,
         });
       }
+    } else {
+      events = set(
+        events,
+        event,
+        dayjs(`${event.start.date}T${event.start.time}`),
+        dayjs(`${event.end.date}T${event.end.time}`)
+      );
     }
   });
   console.log(events);
