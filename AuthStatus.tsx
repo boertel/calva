@@ -1,12 +1,20 @@
-import { ReactNode, createContext, useContext, useState } from "react";
-
-const AuthStatusContext = createContext();
+// @ts-nocheck
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 export enum AuthStatus {
   Pending = "pending",
   Authenticated = "authenticated",
   Unauthenticated = "unauthenticated",
 }
+
+const AuthStatusContext = createContext([]);
 
 export function AuthProvider({ children }: { children?: ReactNode }) {
   const state = useState<AuthStatus>(AuthStatus.Pending);
@@ -17,6 +25,9 @@ export function AuthProvider({ children }: { children?: ReactNode }) {
   );
 }
 
-export function useAuthStatus() {
-  return useContext(AuthStatusContext);
+export function useAuthStatus(): [
+  AuthStatus,
+  Dispatch<SetStateAction<AuthStatus>>
+] {
+  return useContext(AuthStatusContext) as AuthStatus;
 }

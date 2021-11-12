@@ -48,6 +48,7 @@ export async function createGoogleFromReq(req: NextApiRequest) {
   }
 
   const google = new Google(
+    googleAccount.id,
     googleAccount.access_token,
     googleAccount.refresh_token
   );
@@ -58,18 +59,25 @@ class Google {
   token: string;
   private calendar: any;
 
-  constructor(token: string, refresh_token: string) {
+  constructor(id: string, token: string, refresh_token: string) {
     this.token = token;
     const auth = new googleapis.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET
     );
-    auth.on("tokens", (tokens) => {
+    auth.on("tokens", async (tokens) => {
+      console.log("TOKEN", tokens);
+      let data = {};
       if (tokens.refresh_token) {
-        // store the refresh_token in my database!
-        console.log("TOKEN R", tokens.refresh_token);
+        data.refresh_token = tokens.refresh_token;
       }
-      console.log("TOKEN", tokens.access_token);
+      data.access_token = tokens.access_token;
+      if (Object.keys(data).length) {
+        await db.account.update({
+          where: { id },
+          data,
+        });
+      }
     });
     auth.setCredentials({ access_token: token, refresh_token: refresh_token });
     this.calendar = googleapis.calendar({ version: "v3", auth });

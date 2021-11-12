@@ -53,6 +53,7 @@ function ConferenceIcon({
 
 export default function Home() {
   const { events } = useEvents();
+  // @ts-ignore
   const [authStatus] = useAuthStatus();
   const isAuthenticated = authStatus !== AuthStatus.Unauthenticated;
   return (
