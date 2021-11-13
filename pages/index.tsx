@@ -19,6 +19,7 @@ export default function Home() {
   const { events } = useEvents();
   // @ts-ignore
   const [authStatus] = useAuthStatus();
+
   const isAuthenticated = authStatus !== AuthStatus.Unauthenticated;
   return (
     <main className="flex flex-col justify-center">
@@ -28,7 +29,7 @@ export default function Home() {
       />
       {authStatus !== AuthStatus.Authenticated && (
         <LoggedOutFooter
-          className={!isAuthenticated ? "opacity-100" : undefined}
+          className={!isAuthenticated ? "opacity-100" : "opacity-0"}
         />
       )}
     </main>

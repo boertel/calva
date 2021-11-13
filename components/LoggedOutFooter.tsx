@@ -1,11 +1,12 @@
-import cn from 'classnames'
-import { LoginButton } from '@/ui'
+import cn from "classnames";
+import { LoginButton } from "@/ui";
 
 export default function LoggedOutFooter({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "sticky bottom-0 z-20 mx-auto max-w-prose flex flex-col items-center justify-center p-8 space-y-8 pb-16 opacity-0 transition-opacity duration-700", className
+        "sticky bottom-0 z-20 mx-auto max-w-prose flex flex-col items-center justify-center p-8 space-y-8 pb-16 transition-opacity duration-700",
+        className
       )}
     >
       <h1 className="text-9xl font-black text-center">calva</h1>
@@ -25,5 +26,5 @@ export default function LoggedOutFooter({ className }: { className?: string }) {
       </ul>
       <LoginButton />
     </footer>
-  )
+  );
 }
