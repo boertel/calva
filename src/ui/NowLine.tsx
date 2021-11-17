@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CSSProperties } from "react";
 import cn from "classnames";
 import { useRouter } from "next/router";
