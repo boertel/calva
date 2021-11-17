@@ -37,3 +37,37 @@ export function NowLine({ style }: { style?: CSSProperties }) {
     </>
   );
 }
+
+/*
+function Clock() {
+  const [n, setN] = useState<number>(0);
+  const height = 24;
+
+  useInterval(() => {
+    setN((prev) => (prev + 1) % 11);
+  }, 1000);
+
+  const marginTop = `-${height * n}px`;
+  const transition = "margin-top .2s ease-in-out";
+  return (
+    <div className="flex overflow-hidden h-6">
+      <div className="relative">
+        <div>0</div>
+        <div>1</div>
+      </div>
+      <div className="relative" style={{ transition, marginTop }}>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>0</div>
+      </div>
+    </div>
+  );
+}
+*/

@@ -94,7 +94,7 @@ const OtherDay = forwardRef(({ year, month, day, className = "py-4 items-center"
       >
         <h3
           className={cn("self-start sticky top-0 flex items-start z-10 w-full", {
-            "text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black": isToday,
+            "text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black px-4": isToday,
             "w-14 justify-between": !isToday,
             "text-white text-opacity-20 group-hover:text-opacity-100": isWeekend || isOff,
           })}
