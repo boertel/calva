@@ -52,6 +52,9 @@ export default function Event({
   // @ts-ignore
   const isToday = start ? start.isToday() : false;
 
+  const diff = start.diff(now, "seconds");
+  const d = duration(diff);
+
   const AsComponent = conference?.url ? Link : "div";
   return (
     <AsComponent href={conference?.url} target="_blank" rel="noopener">
@@ -83,8 +86,20 @@ export default function Event({
             )}
             <div className="flex items-center gap-2">
               {isNext && (
-                <div className="bg-rose-500 rounded-full px-2 text-sm text-black">
-                  in {duration(start.diff(now, "seconds")).format(["h HH", "m MM"])}
+                <div
+                  className={cn("bg-rose-500 rounded-full px-2 text-sm text-black", {
+                    "animate animate-pulse": diff < 60,
+                  })}
+                >
+                  in{" "}
+                  {diff < 60 ? (
+                    <>
+                      <strong>{d.format("ss")}</strong>
+                      {d.format("[ ]SS")}
+                    </>
+                  ) : (
+                    d.format(["h HH", "m MM"])
+                  )}
                 </div>
               )}
               {!!conference ? (

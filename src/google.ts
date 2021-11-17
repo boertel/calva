@@ -19,9 +19,7 @@ class UnauthorizedError extends HttpError {
 }
 
 const sessionCookieName =
-  process.env.NODE_ENV === "production"
-    ? "__Secure-next-auth.session-token"
-    : "next-auth.session-token";
+  process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token";
 
 export async function createGoogleFromReq(req: NextApiRequest) {
   // @ts-ignore
@@ -40,18 +38,12 @@ export async function createGoogleFromReq(req: NextApiRequest) {
     },
   });
 
-  const googleAccount = user?.accounts?.find(
-    ({ provider }: { provider: string }) => provider === "google"
-  );
+  const googleAccount = user?.accounts?.find(({ provider }: { provider: string }) => provider === "google");
   if (!googleAccount) {
     throw new UnauthorizedError();
   }
 
-  const google = new Google(
-    googleAccount.id,
-    googleAccount.access_token,
-    googleAccount.refresh_token
-  );
+  const google = new Google(googleAccount.id, googleAccount.access_token, googleAccount.refresh_token);
   return google;
 }
 
@@ -61,10 +53,7 @@ class Google {
 
   constructor(id: string, token: string, refresh_token: string) {
     this.token = token;
-    const auth = new googleapis.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET
-    );
+    const auth = new googleapis.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
     auth.on("tokens", async (tokens) => {
       let data = {};
       if (tokens.refresh_token) {
@@ -88,9 +77,7 @@ class Google {
     this.calendar = googleapis.calendar({ version: "v3", auth });
     ["events"].forEach((resource) => {
       ["list"].forEach((method) => {
-        this.calendar[resource][method] = this.calendar[resource][method].bind(
-          this.calendar
-        );
+        this.calendar[resource][method] = this.calendar[resource][method].bind(this.calendar);
       });
     });
   }
@@ -126,9 +113,7 @@ class Google {
           let recurring = null;
           if (recurrence) {
             // FIXME deal with EXDATE and rrule.js
-            recurrence = recurrence.filter(
-              (str: string) => !str.startsWith("EXDATE")
-            );
+            recurrence = recurrence.filter((str: string) => !str.startsWith("EXDATE"));
             recurring = rrulestr(recurrence.join("\n"));
           }
           return {
@@ -149,19 +134,7 @@ class Google {
 }
 
 function parseEvent(
-  {
-    id,
-    created,
-    updated,
-    summary,
-    status,
-    description,
-    location,
-    start,
-    end,
-    recurrence,
-    hangoutLink,
-  },
+  { id, created, updated, summary, status, description, location, start, end, recurrence, hangoutLink },
   index: number
 ) {
   let urls = [];
@@ -209,18 +182,14 @@ function parseEvent(
       date: dayjs(start.date || start.dateTime)
         .tz(start.timeZone)
         .format("YYYY-MM-DD"),
-      time: start.dateTime
-        ? dayjs(start.dateTime).tz(start.timeZone).format("HH:mm")
-        : null,
+      time: start.dateTime ? dayjs(start.dateTime).tz(start.timeZone).format("HH:mm") : null,
       timeZone: start.timeZone,
     },
     end: {
       date: dayjs(end.date || end.dateTime)
         .tz(end.timeZone)
         .format("YYYY-MM-DD"),
-      time: end.dateTime
-        ? dayjs(end.dateTime).tz(end.timeZone).format("HH:mm")
-        : null,
+      time: end.dateTime ? dayjs(end.dateTime).tz(end.timeZone).format("HH:mm") : null,
       timeZone: end.timeZone,
     },
   };

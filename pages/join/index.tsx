@@ -27,12 +27,11 @@ export default function Join({ events = [], children }) {
   const d: Duration = duration(seconds);
 
   return (
-    <div className="max-w-prose w-full mx-auto p-12 text-center flex flex-col gap-12">
-      <h1 className="text-4xl font-black leading-relaxed">
+    <div className="max-w-prose w-full mx-auto p-12 text-center flex flex-col gap-10">
+      <h1 className="text-4xl font-black leading-relaxed mb-14">
         {isNow ? (
           <>
-            Hope you are in this meeting, because it is happening{" "}
-            <span className="text-red-500">NOW</span>!
+            Hope you are in this meeting, because it is happening <span className="text-red-500">NOW</span>!
           </>
         ) : (
           "No meetings happening now!"
@@ -40,18 +39,11 @@ export default function Join({ events = [], children }) {
       </h1>
 
       {!isNow && (
-        <h4 className="mb-10 text-gray-500">
-          Your next meeting is{" "}
-          {start.isToday() ? <>in {d.format(["h HH", "m MM"])}.</> : "later."}
+        <h4 className="text-gray-500">
+          Your next meeting is {start.isToday() ? <>in {d.format(["h HH", "m MM"])}.</> : "later."}
         </h4>
       )}
-      <Event
-        {...event}
-        className="justify-center"
-        start={start}
-        end={end}
-        showConference
-      />
+      <Event {...event} className="justify-center" start={start} end={end} showConference />
       {children}
     </div>
   );

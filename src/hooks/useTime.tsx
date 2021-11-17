@@ -7,7 +7,6 @@ const ClockContext = createContext(null);
 
 export function ClockProvider({ children }: { children: ReactNode }) {
   const now = useNow();
-  console.log(now?.toISOString());
   return <ClockContext.Provider value={now}>{children}</ClockContext.Provider>;
 }
 

@@ -28,16 +28,16 @@ export function useEvents() {
   let events = new Map();
   data.events.forEach((event: any) => {
     if (event.recurrence) {
-      const rule = rrulestr(event.recurrence.join("\n"));
-      rule
-        .all(function (date, i) {
-          return i < 10;
-        })
-        .forEach((date) => {
-          const generatedStart = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`);
-          const generatedEnd = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`);
-          events = set(events, event, generatedStart, generatedEnd);
-        });
+      const dtstart = `DTSTART:${dayjs(`${dayjs(event.start.date).format("YYYY-MM-DD")}T${event.start.time}:00`).format(
+        "YYYYMMDD[T]HHmm00[Z]"
+      )}`;
+      const rule = rrulestr([dtstart].concat(event.recurrence).join("\n"));
+      // FIXME infinite load needs to generate more
+      rule.between(dayjs().subtract(2, "days").toDate(), dayjs().add(20, "days").toDate()).forEach((date) => {
+        const generatedStart = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`);
+        const generatedEnd = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`);
+        events = set(events, event, generatedStart, generatedEnd);
+      });
     } else if (!event.start.time || !event.start.time) {
       let start = dayjs(event.start.date).startOf("day");
       const end = dayjs(event.end.date).endOf("day");
