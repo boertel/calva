@@ -39,6 +39,30 @@ dayjs.extend(function isThisMonth(o, c, d) {
   };
 });
 
+dayjs.extend(function isHappeningNowWith(o, c, d) {
+  // @ts-ignore
+  c.prototype.isHappeningNowWith = function (end) {
+    const now = dayjs();
+    return now.isBetween(this, end, null, "[]");
+  };
+});
+
+dayjs.extend(function isPast(o, c, d) {
+  // @ts-ignore
+  c.prototype.isPast = function () {
+    const now = dayjs();
+    return now.isAfter(this);
+  };
+});
+
+dayjs.extend(function isFuture(o, c, d) {
+  // @ts-ignore
+  c.prototype.isFuture = function () {
+    const now = dayjs();
+    return this.isAfter(now);
+  };
+});
+
 dayjs.extend(function isThisWeek(o, c, d) {
   // @ts-ignore
   c.prototype.isThisWeek = function () {

@@ -95,12 +95,29 @@ class Google {
     });
   }
 
-  async getEvents() {
+  async getNowAndNext({ calendarId = "primary" }) {
     const events = await this.calendar.events.list({
-      calendarId: "primary",
+      calendarId,
+      timeMin: new Date().toISOString(),
+      orderBy: "startTime",
+      singleEvents: true,
+      maxResults: 10,
+    });
+    const { nextPageToken, items } = events.data;
+
+    return {
+      nextPageToken,
+      events: items.map(parseEvent),
+    };
+  }
+
+  async getEvents(calendarId = "primary") {
+    const events = await this.calendar.events.list({
+      calendarId,
       timeMin: new Date().toISOString(),
       maxResults: 25,
     });
+
     const { nextPageToken, items } = events.data;
     return {
       nextPageToken,
@@ -131,21 +148,22 @@ class Google {
   }
 }
 
-function parseEvent({
-  id,
-  created,
-  updated,
-  summary,
-  status,
-  description,
-  location,
-  start,
-  end,
-  recurring,
-  recurrence,
-  conferenceData,
-  hangoutLink,
-}) {
+function parseEvent(
+  {
+    id,
+    created,
+    updated,
+    summary,
+    status,
+    description,
+    location,
+    start,
+    end,
+    recurrence,
+    hangoutLink,
+  },
+  index: number
+) {
   let urls = [];
   let conference = null;
   if (description) {
@@ -173,6 +191,11 @@ function parseEvent({
     };
   }
 
+  if (index === 0) {
+    //start.dateTime = "2021-11-16T18:15:00-08:00";
+    //end.dateTime = "2021-11-16T19:15:00-08:00";
+  }
+
   return {
     id,
     created,
@@ -181,7 +204,7 @@ function parseEvent({
     status,
     urls,
     conference,
-    recurrence,
+    recurrence: recurrence || null,
     start: {
       date: dayjs(start.date || start.dateTime)
         .tz(start.timeZone)
