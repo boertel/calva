@@ -4,6 +4,7 @@ import Head from "next/head";
 import type { AppProps } from "next/app";
 import { AuthProvider, useAuthStatus, AuthStatus } from "../AuthStatus";
 import { SettingsProvider } from "components/Settings";
+import { ClockProvider } from "@/hooks";
 
 import "../styles/globals.css";
 
@@ -16,7 +17,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <AuthProvider>
         <SWRWithAuth>
           <SettingsProvider>
-            <Component {...pageProps} />
+            <ClockProvider>
+              <Component {...pageProps} />
+            </ClockProvider>
           </SettingsProvider>
         </SWRWithAuth>
       </AuthProvider>

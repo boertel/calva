@@ -5,7 +5,7 @@ import Link from "next/link";
 import { IEvent } from "@/events";
 // @ts-ignore
 import { duration } from "@boertel/duration";
-import { useNow } from "@/hooks";
+import { useClock } from "@/hooks";
 import { WarningIcon, RecurringIcon } from "@/icons";
 import { ConferenceIcon } from "@/ui";
 import { useSettings } from "components/Settings";
@@ -27,7 +27,7 @@ export default function Event({
   isNext?: boolean;
   showConference?: boolean;
 }) {
-  const now = useNow();
+  const now = useClock();
   /**
    * Now:                 now.isBetween(start, end, null, '[]')
    *                                   v
@@ -59,12 +59,11 @@ export default function Event({
         className={cn(
           isToday
             ? cn(
-                "cursor-pointer mx-4 rounded-lg p-4 flex flex-col my-4 bg-opacity-0 transition-opacity hover:bg-opacity-20 space-y-2",
+                "cursor-pointer rounded-lg p-4 flex flex-col my-4 bg-opacity-0 transition-opacity hover:bg-opacity-20 space-y-2",
                 {
                   "opacity-30 border border-purple-500": isPast,
                   "border-2 border-red-500 bg-red-500": isNow,
-                  "border border-dashed border-purple-500 bg-purple-500":
-                    isFuture,
+                  "border border-dashed border-purple-500 bg-purple-500": isFuture,
                 }
               )
             : "flex flex-row items-center gap-2",
@@ -85,25 +84,14 @@ export default function Event({
             <div className="flex items-center gap-2">
               {isNext && (
                 <div className="bg-rose-500 rounded-full px-2 text-sm text-black">
-                  in{" "}
-                  {duration(start.diff(now, "seconds")).format([
-                    "h HH",
-                    "m MM",
-                  ])}
+                  in {duration(start.diff(now, "seconds")).format(["h HH", "m MM"])}
                 </div>
               )}
-              {(isToday || showConference) &&
-                (!!conference ? (
-                  <ConferenceIcon
-                    className={cn("filter", { grayscale: !isNow })}
-                    service={conference.type}
-                  />
-                ) : (
-                  <WarningIcon
-                    size="1.2em"
-                    className={isNow ? "text-red-500" : "text-gray-500"}
-                  />
-                ))}
+              {!!conference ? (
+                <ConferenceIcon className={cn("filter", { grayscale: !isNow })} service={conference.type} />
+              ) : (
+                isToday && <WarningIcon size="1.2em" className={isNow ? "text-red-500" : "text-gray-500"} />
+              )}
             </div>
           </h4>
         )}

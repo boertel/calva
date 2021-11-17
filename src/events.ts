@@ -23,25 +23,19 @@ export enum ConferenceService {
 }
 
 export function useEvents() {
-  const { data = { nextPageToken: null, events: [] }, ...rest } =
-    useSWR("/api/events");
+  const { data = { nextPageToken: null, events: [] }, ...rest } = useSWR("/api/events");
 
   let events = new Map();
   data.events.forEach((event: any) => {
     if (event.recurrence) {
-      console.log(event.recurrence.join("\n"));
       const rule = rrulestr(event.recurrence.join("\n"));
       rule
         .all(function (date, i) {
           return i < 10;
         })
         .forEach((date) => {
-          const generatedStart = dayjs(
-            `${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`
-          );
-          const generatedEnd = dayjs(
-            `${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`
-          );
+          const generatedStart = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`);
+          const generatedEnd = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`);
           events = set(events, event, generatedStart, generatedEnd);
         });
     } else if (!event.start.time || !event.start.time) {
@@ -51,12 +45,7 @@ export function useEvents() {
       event.isAllDay = true;
       if (diff > 0) {
         for (let i = 1; i < diff; i += 1) {
-          events = set(
-            events,
-            event,
-            start.clone().startOf("day"),
-            start.clone().endOf("day")
-          );
+          events = set(events, event, start.clone().startOf("day"), start.clone().endOf("day"));
           start = start.add(24, "hour");
         }
       } else {
@@ -75,7 +64,6 @@ export function useEvents() {
       );
     }
   });
-  console.log(events);
 
   return {
     events,

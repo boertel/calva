@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import cn from "classnames";
-import { useNow } from "@/hooks";
+import { useClock } from "@/hooks";
 import { useEvents, IEvent } from "@/events";
 import { useAuthStatus, AuthStatus } from "../AuthStatus";
 
@@ -23,27 +23,16 @@ export default function Home() {
   const isAuthenticated = authStatus !== AuthStatus.Unauthenticated;
   return (
     <main className="flex flex-col justify-center">
-      <Events
-        events={events}
-        className={cn({ "opacity-30": !isAuthenticated })}
-      />
+      <Events events={events} className={cn({ "opacity-30": !isAuthenticated })} />
       {authStatus !== AuthStatus.Authenticated && (
-        <LoggedOutFooter
-          className={!isAuthenticated ? "opacity-100" : "opacity-0"}
-        />
+        <LoggedOutFooter className={!isAuthenticated ? "opacity-100" : "opacity-0"} />
       )}
     </main>
   );
 }
 
-function Events({
-  events,
-  className,
-}: {
-  className?: string;
-  events: Map<string, IEvent[]>;
-}) {
-  const now = useNow();
+function Events({ events, className }: { className?: string; events: Map<string, IEvent[]> }) {
+  const now = useClock();
 
   const days = range(0, 12 * 7);
 
@@ -52,22 +41,14 @@ function Events({
   }
 
   return (
-    <ul
-      style={{
-        display: "grid",
-        gridTemplateColumns: "max-content minmax(300px, 65ch) max-content",
-      }}
-      className={className}
-    >
+    <ul className={cn("grid grid-cols-events", className)}>
       {days.map((index) => {
         // @ts-ignore
         const current = now.add(index, "days");
         const key = current.format("YYYY-MM-DD");
         const currentEvents = events.get(key) || [];
 
-        const hasRecurringMeetings = !!currentEvents.find(
-          ({ recurrence }) => !!recurrence
-        );
+        const hasRecurringMeetings = !!currentEvents.find(({ recurrence }) => !!recurrence);
 
         let inMeetingCurrently = false;
 
@@ -79,9 +60,7 @@ function Events({
             day={current.date()}
             isOff={!!currentEvents.find(({ isOff }) => isOff)}
           >
-            {hasRecurringMeetings && !current.isToday() && (
-              <RecurringIcon className="text-purple-500" size="1em" />
-            )}
+            {hasRecurringMeetings && !current.isToday() && <RecurringIcon className="text-purple-500" size="1em" />}
             {currentEvents.map((event: IEvent, index: number) => {
               let isNext =
                 current.isToday() &&
@@ -95,12 +74,7 @@ function Events({
                 );
               if (event.start && event.end && !inMeetingCurrently) {
                 // @ts-ignore
-                inMeetingCurrently = now.isBetween(
-                  event.start,
-                  event.end,
-                  null,
-                  "[]"
-                );
+                inMeetingCurrently = now.isBetween(event.start, event.end, null, "[]");
               }
               return (
                 <Fragment key={event.id}>

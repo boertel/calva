@@ -7,3 +7,7 @@ body.dark {
 
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --shadow-color: 0deg 0% 0%;
+}

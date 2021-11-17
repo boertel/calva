@@ -1,12 +1,26 @@
 // @ts-nocheck
-import { useEffect, useCallback, useState } from "react";
+import { createContext, useContext, useCallback, useState } from "react";
 import dayjs from "@/dayjs";
 import useInterval from "use-interval";
 
+const ClockContext = createContext(null);
+
+export function ClockProvider({ children }: { children: ReactNode }) {
+  const now = useNow();
+  console.log(now?.toISOString());
+  return <ClockContext.Provider value={now}>{children}</ClockContext.Provider>;
+}
+
+export function useClock() {
+  return useContext(ClockContext);
+}
+
+function secondsUntilNextMinute() {
+  return 60 - new Date().getSeconds();
+}
+
 export function useEveryMinute(callback, immediate?: boolean) {
-  const [onTheMinute, setOnTheMinute] = useState<number>(
-    (60 - new Date().getSeconds()) * 1000
-  );
+  const [onTheMinute, setOnTheMinute] = useState<number>(secondsUntilNextMinute * 1000);
 
   const _callback = useCallback(() => {
     callback();
@@ -15,7 +29,7 @@ export function useEveryMinute(callback, immediate?: boolean) {
   useInterval(
     () => {
       _callback();
-      setOnTheMinute(60 * 1000);
+      setOnTheMinute(secondsUntilNextMinute() * 1000);
     },
     onTheMinute,
     immediate
