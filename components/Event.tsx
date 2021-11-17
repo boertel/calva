@@ -52,7 +52,8 @@ export default function Event({
   // @ts-ignore
   const isToday = start ? start.isToday() : false;
 
-  const diff = start.diff(now, "seconds");
+  // now isn't on the minute perfectly
+  const diff = start.diff(now.clone().second(0).subtract(1, "minute"), "seconds");
   const d = duration(diff);
 
   const AsComponent = conference?.url ? Link : "div";
@@ -87,7 +88,7 @@ export default function Event({
             <div className="flex items-center gap-2">
               {isNext && (
                 <div
-                  className={cn("bg-rose-500 rounded-full px-2 text-sm text-black", {
+                  className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black", {
                     "animate animate-pulse": diff < 60,
                   })}
                 >
@@ -98,7 +99,10 @@ export default function Event({
                       {d.format("[ ]SS")}
                     </>
                   ) : (
-                    d.format(["h HH", "m MM"])
+                    <>
+                      <span className="hidden md:inline">{d.format(["h HH", "m MM"])}</span>
+                      <span className="inline md:hidden">{d.format(["hH", "mM"])}</span>
+                    </>
                   )}
                 </div>
               )}
