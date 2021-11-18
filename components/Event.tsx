@@ -5,7 +5,7 @@ import Link from "next/link";
 import { IEvent } from "@/events";
 // @ts-ignore
 import { duration } from "@boertel/duration";
-import { useClock } from "@/hooks";
+import { useEverySecond, useClock } from "@/hooks";
 import { WarningIcon, RecurringIcon } from "@/icons";
 import { ConferenceIcon } from "@/ui";
 import { useSettings } from "components/Settings";
@@ -18,14 +18,12 @@ export default function Event({
   recurrence,
   isAllDay,
   isNext = false,
-  showConference = false,
   style,
   className,
 }: IEvent & {
   style?: CSSProperties;
   className?: string;
   isNext?: boolean;
-  showConference?: boolean;
 }) {
   /**
    * Now:                 now.isBetween(start, end, null, '[]')
@@ -100,18 +98,20 @@ function WaitingPill({ start }: { start: typeof dayjs }) {
 
   // now isn't on the minute perfectly
   const diff = start.diff(now, "seconds");
-  const d = duration(diff);
+  const seconds = useEverySecond(diff < 60);
+  const d = duration(diff < 60 ? 60 - seconds : diff);
+
   return (
     <div
-      className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black", {
+      className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black text-center", {
         "animate animate-pulse": diff < 60,
       })}
     >
       in{" "}
       {diff < 60 ? (
         <>
-          <strong>{d.format("ss")}</strong>
-          {d.format("[ ]SS")}
+          <strong>{d.format("s").padStart(2)}</strong>
+          {d.format("[ ]SS").padEnd(8)}
         </>
       ) : (
         <>

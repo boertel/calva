@@ -3,7 +3,6 @@ import cn from "classnames";
 import { useClock } from "@/hooks";
 import { useEvents, IEvent } from "@/events";
 import { useAuthStatus, AuthStatus } from "../AuthStatus";
-import dayjs from "@/dayjs";
 
 import LoggedOutFooter from "components/LoggedOutFooter";
 import Event from "components/Event";

@@ -80,3 +80,14 @@ export function useNow() {
   );
   return now;
 }
+
+export function useEverySecond(active): number {
+  const [seconds, setSeconds] = useState<number>(new Date().getSeconds());
+  useInterval(
+    useCallback(() => {
+      setSeconds(new Date().getSeconds());
+    }, [setSeconds]),
+    active ? 1000 : false
+  );
+  return seconds;
+}
