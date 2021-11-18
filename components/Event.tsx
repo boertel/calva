@@ -27,7 +27,6 @@ export default function Event({
   isNext?: boolean;
   showConference?: boolean;
 }) {
-  const now = useClock();
   /**
    * Now:                 now.isBetween(start, end, null, '[]')
    *                                   v
@@ -39,9 +38,6 @@ export default function Event({
    */
   const { timeFormat } = useSettings();
 
-  if (now === null) {
-    return null;
-  }
   // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
   // @ts-ignore
@@ -51,10 +47,6 @@ export default function Event({
 
   // @ts-ignore
   const isToday = start ? start.isToday() : false;
-
-  // now isn't on the minute perfectly
-  const diff = start.diff(now.clone().second(0).subtract(1, "minute"), "seconds");
-  const d = duration(diff);
 
   const AsComponent = conference?.url ? Link : "div";
   return (
@@ -86,26 +78,7 @@ export default function Event({
               </div>
             )}
             <div className="flex items-center gap-2">
-              {isNext && (
-                <div
-                  className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black", {
-                    "animate animate-pulse": diff < 60,
-                  })}
-                >
-                  in{" "}
-                  {diff < 60 ? (
-                    <>
-                      <strong>{d.format("ss")}</strong>
-                      {d.format("[ ]SS")}
-                    </>
-                  ) : (
-                    <>
-                      <span className="hidden md:inline">{d.format(["h HH", "m MM"])}</span>
-                      <span className="inline md:hidden">{d.format(["hH", "mM"])}</span>
-                    </>
-                  )}
-                </div>
-              )}
+              {isNext && <WaitingPill start={start} />}
               {!!conference ? (
                 <ConferenceIcon className={cn("filter", { grayscale: !isNow })} service={conference.type} />
               ) : (
@@ -119,5 +92,33 @@ export default function Event({
         </div>
       </a>
     </AsComponent>
+  );
+}
+
+function WaitingPill({ start }: { start: typeof dayjs }) {
+  const now = useClock();
+
+  // now isn't on the minute perfectly
+  const diff = start.diff(now, "seconds");
+  const d = duration(diff);
+  return (
+    <div
+      className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black", {
+        "animate animate-pulse": diff < 60,
+      })}
+    >
+      in{" "}
+      {diff < 60 ? (
+        <>
+          <strong>{d.format("ss")}</strong>
+          {d.format("[ ]SS")}
+        </>
+      ) : (
+        <>
+          <span className="hidden md:inline">{d.format(["h HH", "m MM"])}</span>
+          <span className="inline md:hidden">{d.format(["hH", "mM"])}</span>
+        </>
+      )}
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import cn from "classnames";
 import { useClock } from "@/hooks";
 import { useEvents, IEvent } from "@/events";
 import { useAuthStatus, AuthStatus } from "../AuthStatus";
+import dayjs from "@/dayjs";
 
 import LoggedOutFooter from "components/LoggedOutFooter";
 import Event from "components/Event";
@@ -76,6 +77,7 @@ function Events({ events, className }: { className?: string; events: Map<string,
                 // @ts-ignore
                 inMeetingCurrently = now.isBetween(event.start, event.end, null, "[]");
               }
+
               return (
                 <Fragment key={event.id}>
                   {isNext && !inMeetingCurrently && <NowLine />}
