@@ -61,7 +61,10 @@ function Today({ year, month, day, children }: DayProps) {
   );
 }
 
-const OtherDay = forwardRef(({ year, month, day, className = "py-4 items-center", isOff, children }: DayProps, ref) => {
+const OtherDay = forwardRef(function OtherDayRef(
+  { year, month, day, className = "py-4 items-center", isOff, children }: DayProps,
+  ref
+) {
   const current = dayjs([year, month, day]);
 
   const isToday = current.isToday();
