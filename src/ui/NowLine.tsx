@@ -21,6 +21,7 @@ export function NowLine({ style }: { style?: CSSProperties }) {
       <style jsx>{`
         div:hover #now {
           opacity: 100;
+          --tw-bg-opacity: 1;
         }
         #now::before {
           content: " ";
