@@ -22,6 +22,10 @@ export enum ConferenceService {
   MicrosoftTeams = "teams",
 }
 
+function toDayjs({ date, time }: { date: string; time: string }) {
+  return dayjs(dayjs.utc(`${date}T${time}`).format());
+}
+
 export function useEvents() {
   const { data = { nextPageToken: null, events: [] }, ...rest } = useSWR("/api/events");
 
@@ -34,8 +38,8 @@ export function useEvents() {
       const rule = rrulestr([dtstart].concat(event.recurrence).join("\n"));
       // FIXME infinite load needs to generate more
       rule.between(dayjs().subtract(2, "days").toDate(), dayjs().add(20, "days").toDate()).forEach((date) => {
-        const generatedStart = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.start.time}:00`);
-        const generatedEnd = dayjs(`${dayjs(date).format("YYYY-MM-DD")}T${event.end.time}:00`);
+        const generatedStart = toDayjs({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
+        const generatedEnd = toDayjs({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
         events = set(events, event, generatedStart, generatedEnd);
       });
     } else if (!event.start.time || !event.start.time) {
@@ -56,12 +60,7 @@ export function useEvents() {
         });
       }
     } else {
-      events = set(
-        events,
-        event,
-        dayjs(`${event.start.date}T${event.start.time}`),
-        dayjs(`${event.end.date}T${event.end.time}`)
-      );
+      events = set(events, event, toDayjs(event.start), toDayjs(event.end));
     }
   });
 

@@ -46,7 +46,8 @@ function Events({ events, className }: { className?: string; events: Map<string,
         // @ts-ignore
         const current = now.add(index, "days");
         const key = current.format("YYYY-MM-DD");
-        const currentEvents = events.get(key) || [];
+        // @ts-ignore
+        const currentEvents = events.get(key)?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
         const hasRecurringMeetings = !!currentEvents.find(({ recurrence }) => !!recurrence);
 

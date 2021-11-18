@@ -154,6 +154,11 @@ function parseEvent(
         if (pathname.startsWith("/j/")) {
           conference.url = url;
         }
+      } else if (hostname.endsWith("teams.microsoft.com")) {
+        conference.type = "teams";
+        if (pathname.startsWith("/l/")) {
+          conference.url = url;
+        }
       }
     });
   }
@@ -179,17 +184,13 @@ function parseEvent(
     conference,
     recurrence: recurrence || null,
     start: {
-      date: dayjs(start.date || start.dateTime)
-        .tz(start.timeZone)
-        .format("YYYY-MM-DD"),
-      time: start.dateTime ? dayjs(start.dateTime).tz(start.timeZone).format("HH:mm") : null,
+      date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
+      time: start.dateTime ? dayjs(start.dateTime).format("HH:mm") : null,
       timeZone: start.timeZone,
     },
     end: {
-      date: dayjs(end.date || end.dateTime)
-        .tz(end.timeZone)
-        .format("YYYY-MM-DD"),
-      time: end.dateTime ? dayjs(end.dateTime).tz(end.timeZone).format("HH:mm") : null,
+      date: dayjs(end.date || end.dateTime).format("YYYY-MM-DD"),
+      time: end.dateTime ? dayjs(end.dateTime).format("HH:mm") : null,
       timeZone: end.timeZone,
     },
   };
