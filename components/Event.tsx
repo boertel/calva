@@ -93,7 +93,7 @@ export default function Event({
           </h4>
         )}
         <div className="flex items-center justify-between">
-          <h4>{summary.startsWith("Myria") ? "App Dev Sync" : summary}</h4>
+          <h4>{summary}</h4>
           {isExternal && <ExternalIcon className="text-gray-500" />}
         </div>
       </a>
