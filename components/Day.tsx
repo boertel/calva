@@ -27,7 +27,7 @@ export default function Day({ year, month, day, isOff = false, children }: DayPr
   } else {
     return (
       <OtherDay year={year} month={month} day={day} isOff={isOff}>
-        <div className="px-4">{children}</div>
+        <div className="px-4 flex items-center w-full">{children}</div>
       </OtherDay>
     );
   }
@@ -96,8 +96,8 @@ const OtherDay = forwardRef(function OtherDayRef(
         ref={ref}
       >
         <h3
-          className={cn("self-start sticky top-0 flex items-start z-10 w-full", {
-            "text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black px-4": isToday,
+          className={cn("self-start sticky top-0 flex items-start z-10 w-full px-4", {
+            "text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black": isToday,
             "w-14 justify-between": !isToday,
             "text-white text-opacity-20 group-hover:text-opacity-100": isWeekend || isOff,
           })}

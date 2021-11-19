@@ -101,7 +101,7 @@ class Google {
   async getEvents(calendarId = "primary") {
     const events = await this.calendar.events.list({
       calendarId,
-      timeMin: new Date().toISOString(),
+      timeMin: dayjs().subtract(1, "day").startOf("day").toISOString(),
       maxResults: 25,
     });
 
@@ -134,7 +134,7 @@ class Google {
 }
 
 function parseEvent(
-  { id, created, updated, summary, status, description, location, start, end, recurrence, hangoutLink },
+  { id, created, updated, summary, status, description, location, start, end, recurrence, hangoutLink, attendees },
   index: number
 ) {
   let urls = [];
@@ -183,6 +183,12 @@ function parseEvent(
     urls,
     conference,
     recurrence: recurrence || null,
+    attendees:
+      attendees
+        ?.filter(({ resource }) => !resource)
+        .map(({ email }) => {
+          return { email };
+        }) || [],
     start: {
       date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
       time: start.dateTime ? dayjs(start.dateTime).format("HH:mm") : null,

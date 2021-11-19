@@ -2,6 +2,10 @@ import useSWR from "swr";
 import dayjs from "@/dayjs";
 import { rrulestr } from "rrule";
 
+interface Attendee {
+  email: string;
+}
+
 export interface IEvent {
   id: string;
   summary: string;
@@ -11,6 +15,7 @@ export interface IEvent {
   };
   isOff?: boolean;
   recurrence?: string[];
+  attendees: Attendee[];
   isAllDay?: boolean;
   start?: typeof dayjs;
   end?: typeof dayjs;
@@ -37,7 +42,7 @@ export function useEvents() {
       )}`;
       const rule = rrulestr([dtstart].concat(event.recurrence).join("\n"));
       // FIXME infinite load needs to generate more
-      rule.between(dayjs().subtract(2, "days").toDate(), dayjs().add(20, "days").toDate()).forEach((date) => {
+      rule.between(dayjs().subtract(2, "days").toDate(), dayjs().add(44, "days").toDate()).forEach((date) => {
         const generatedStart = toDayjs({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
         const generatedEnd = toDayjs({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
         events = set(events, event, generatedStart, generatedEnd);

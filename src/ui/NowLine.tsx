@@ -4,14 +4,15 @@ import cn from "classnames";
 import { useRouter } from "next/router";
 import { useClock } from "@/hooks";
 
-export function NowLine({ style }: { style?: CSSProperties }) {
+export function NowLine({ style, className }: { style?: CSSProperties; className?: string }) {
   const { query } = useRouter();
   const now = useClock();
   return (
     <>
       <div
         className={cn(
-          "w-full flex items-center text-red-500 transition-opacity text-opacity-40 hover:text-opacity-100"
+          "w-full flex items-center text-red-500 transition-opacity text-opacity-40 hover:text-opacity-100",
+          className
         )}
         style={style}
       >

@@ -61,7 +61,7 @@ function Events({ events, className }: { className?: string; events: Map<string,
             day={current.date()}
             isOff={!!currentEvents.find(({ isOff }) => isOff)}
           >
-            {hasRecurringMeetings && !current.isToday() && <RecurringIcon className="text-purple-500" size="1em" />}
+            {hasRecurringMeetings && !current.isToday() && <RecurringIcon className="text-purple-500 mr-2" />}
             {currentEvents.map((event: IEvent, index: number) => {
               let isNext =
                 current.isToday() &&
@@ -75,12 +75,12 @@ function Events({ events, className }: { className?: string; events: Map<string,
                 );
               if (event.start && event.end && !inMeetingCurrently) {
                 // @ts-ignore
-                inMeetingCurrently = now.isBetween(event.start, event.end, null, "[]");
+                inMeetingCurrently = event.start.isHappeningNowWith(event.end);
               }
 
               return (
                 <Fragment key={event.id}>
-                  {isNext && !inMeetingCurrently && <NowLine />}
+                  <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"} />
                   {(current.isToday() || !event.recurrence) && (
                     <Event isNext={!inMeetingCurrently && isNext} {...event} />
                   )}
