@@ -122,9 +122,9 @@ class Google {
             recurring,
           };
         })
-        .filter(({ start, recurring }) => {
+        .filter(({ start, summary, recurring }) => {
           if (recurring && recurring?.options?.until) {
-            return recurring?.options?.until >= new Date();
+            return dayjs().isAfter(recurring.options.until);
           }
           return !!start;
         })
