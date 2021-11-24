@@ -71,19 +71,19 @@ export function TodoList() {
 
   const key = dayjs().format("YYYY-MM-DD");
   return (
-    <ul className="px-4 py-6">
+    <ul className="py-6">
       {todos
         .filter(({ date }: Todo) => dayjs.utc(date).format("YYYY-MM-DD") === key)
         .map(({ id, status, text }: Todo) => (
           <TodoItem key={id} id={id} status={status} text={text} />
         ))}
-      <li>
+      <li className="sticky bottom-0 px-4 pb-2 bg-black mt-2">
         <input
           type="text"
           ref={input}
           placeholder={placeholder}
           className={cn(
-            "pl-11 mt-2 bg-transparent focus:ring-2 ring-purple-500 focus:border-purple-500 p-2 font-mono rounded-md focus:outline-none w-full animate placeholder-purple-200 placeholder-opacity-0 hover:placeholder-opacity-60 focus:placeholder-opacity-60",
+            "md:pl-7 bg-transparent focus:ring-2 ring-purple-500 focus:border-purple-500 p-2 font-mono rounded-md focus:outline-none w-full animate placeholder-purple-200",
             isEmpty && "animate-shake"
           )}
           onFocus={onFocus}
@@ -124,7 +124,7 @@ function TodoItem({ status, text, id }: Todo) {
   }
 
   return (
-    <li>
+    <li className="pl-2 pr-4">
       <Label
         className={cn(
           "transition-opacity",
@@ -132,7 +132,6 @@ function TodoItem({ status, text, id }: Todo) {
           { "opacity-30 hover:opacity-100": status === "delayed" }
         )}
       >
-        <Checkbox status={status} onContextMenu={onContextMenu} onClick={onClick} />
         <Input onContextMenu={onContextMenu} onClick={onClick} onBlur={onBlur} status={status}>
           {text}
         </Input>
@@ -198,6 +197,9 @@ function Input({
       onContextMenu={onContextMenu}
       className={cn("group w-full flex items-center justify-between select-none font-mono text-sm relative", {})}
     >
+      <div className={cn("absolute top-0 bottom-0 left-0 flex items-center px-3 ")}>
+        <Checkbox status={status} onContextMenu={onContextMenu} onClick={onClick} />
+      </div>
       <input
         readOnly={!isEditable}
         onBlur={handleOnBlur}
@@ -207,7 +209,7 @@ function Input({
         onKeyDown={handleOnKeyDown}
         defaultValue={children}
         className={cn(
-          "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none",
+          "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none pl-10 pr-10",
           { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500": isEditable },
           status === "done" && "line-through filter grayscale",
           className
@@ -240,7 +242,7 @@ function Input({
 function Label({ children, className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <>
-      <div className={cn("flex items-center cursor-pointer space-x-3", className)} {...props}>
+      <div className={cn("flex items-center cursor-pointer space-x-2", className)} {...props}>
         {children}
       </div>
     </>
