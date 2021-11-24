@@ -10,7 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Account {
   id                 String  @id @default(cuid())
   userId             String
@@ -48,6 +47,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Todo          Todo[]
 }
 
 model VerificationToken {
@@ -56,6 +56,17 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  status    String?  @default("todo")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // model Event {

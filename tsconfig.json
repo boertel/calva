@@ -15,6 +15,7 @@
       "@/icons": ["src/icons"],
       "@/middlewares": ["src/middlewares"],
       "@/events": ["src/events"],
+      "@/todos": ["src/todos"],
       "@/db": ["src/db"]
     },
     "allowJs": true,

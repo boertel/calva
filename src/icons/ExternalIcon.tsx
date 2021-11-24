@@ -1,11 +1,11 @@
 import * as React from "react";
 
-export function ExternalIcon(props: React.SVGProps<SVGSVGElement>) {
+export function ExternalIcon({ size = "1em", ...props }: { size: string } & React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="1em"
-      height="1em"
+      width={size}
+      height={size}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

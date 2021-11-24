@@ -4,7 +4,7 @@ export { default as GoogleMeetIcon } from "./GoogleMeetIcon";
 export { default as GoogleLogo } from "./GoogleLogo";
 export * from "./ExternalIcon";
 
-import { AlertCircle, CheckCircle, Repeat } from "react-feather";
+import { AlertCircle, CheckCircle, Repeat, ChevronRight, Circle, Edit, X } from "react-feather";
 
 const size = (WrappedComponent: React.FunctionComponent) => {
   return function SizeIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -16,3 +16,9 @@ const size = (WrappedComponent: React.FunctionComponent) => {
 export const WarningIcon = size(AlertCircle);
 export const CheckCircleIcon = size(CheckCircle);
 export const RecurringIcon = size(Repeat);
+export const EditIcon = size(Edit);
+export const DoneIcon = size(X);
+
+export const TodoTodoIcon = size(Circle);
+export const TodoDelayedIcon = size(ChevronRight);
+export const TodoDoneIcon = size(CheckCircle);

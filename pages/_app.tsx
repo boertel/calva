@@ -35,7 +35,7 @@ function SWRWithAuth({ children }: { children: ReactNode }) {
   return (
     <SWRConfig
       value={{
-        revalidateOnFocus: false,
+        revalidateOnFocus: true,
         fetcher: (resource, init) =>
           fetch(resource, init).then((res) => {
             if (res.ok) {

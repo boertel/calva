@@ -3,6 +3,7 @@ import { duration } from "@boertel/duration";
 import type { Duration } from "@boertel/duration";
 import dayjs from "@/dayjs";
 import Event from "components/Event";
+import { useNow } from "@/hooks";
 
 // @ts-ignore
 export async function getServerSideProps(context) {
@@ -14,16 +15,18 @@ export async function getServerSideProps(context) {
 // @ts-ignore
 export default function Join({ events = [], children }) {
   const event = events[0];
-  const now = dayjs();
+  const now = useNow();
+
   // @ts-ignore
-  const start = dayjs(`${event.start.date}T${event.start.time}`);
+  const start = dayjs.parts(event.start);
   // @ts-ignore
-  const end = dayjs(`${event.end.date}T${event.end.time}`);
+  const end = dayjs.parts(event.end);
 
   // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
 
-  const seconds = now.diff(start, "seconds");
+  // @ts-ignore
+  const seconds = (now || dayjs()).diff(start, "seconds");
   const d: Duration = duration(seconds);
 
   return (
@@ -43,7 +46,7 @@ export default function Join({ events = [], children }) {
           Your next meeting is {start.isToday() ? <>in {d.format(["h HH", "m MM"])}.</> : "later."}
         </h4>
       )}
-      <Event {...event} className="justify-center" start={start} end={end} showConference />
+      <Event {...event} className="justify-center" start={start} end={end} isNext={true} />
       {children}
     </div>
   );

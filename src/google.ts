@@ -134,7 +134,21 @@ class Google {
 }
 
 function parseEvent(
-  { id, created, updated, summary, status, description, location, start, end, recurrence, hangoutLink, attendees },
+  {
+    id,
+    created,
+    updated,
+    summary,
+    status,
+    description,
+    location,
+    start,
+    end,
+    recurrence,
+    hangoutLink,
+    attendees,
+    conferenceData,
+  },
   index: number
 ) {
   let urls = [];
@@ -144,6 +158,9 @@ function parseEvent(
   }
   if (location) {
     urls = urls.concat(Array.from(getUrls(location)));
+  }
+  if (conferenceData?.entryPoints) {
+    urls = urls.concat(conferenceData?.entryPoints.map(({ uri }) => uri));
   }
   if (urls.length) {
     conference = {};
@@ -161,6 +178,9 @@ function parseEvent(
         }
       }
     });
+    if (Object.keys(conference).length === 0) {
+      conference = null;
+    }
   }
   if (hangoutLink) {
     conference = {
@@ -192,12 +212,12 @@ function parseEvent(
     start: {
       date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
       time: start.dateTime ? dayjs(start.dateTime).format("HH:mm") : null,
-      timeZone: start.timeZone,
+      timeZone: start.timeZone || null,
     },
     end: {
       date: dayjs(end.date || end.dateTime).format("YYYY-MM-DD"),
       time: end.dateTime ? dayjs(end.dateTime).format("HH:mm") : null,
-      timeZone: end.timeZone,
+      timeZone: end.timeZone || null,
     },
   };
 }

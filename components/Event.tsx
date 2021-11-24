@@ -55,7 +55,7 @@ export default function Event({
 
   const AsComponent = conference?.url ? Link : "div";
   return (
-    <AsComponent href={conference?.url} target="_blank" rel="noopener">
+    <AsComponent href={conference?.url} target="_blank" rel="noopener" className="w-full">
       <a
         className={cn(
           isToday
@@ -73,7 +73,7 @@ export default function Event({
         style={style}
       >
         {start && end && !isAllDay && (
-          <h4 className="flex justify-between items-center gap-2">
+          <h4 className="flex justify-between items-center gap-2 flex-shrink-0">
             <div
               className={cn("flex items-center gap-2", { "text-red-500 font-medium": isNow, "text-gray-500": !isNow })}
             >
@@ -83,37 +83,45 @@ export default function Event({
               {!!recurrence && <RecurringIcon />}
             </div>
             <div className="flex items-center gap-2">
-              {isNext && <WaitingPill start={start} />}
+              {(isNext || isNow) && <WaitingPill start={start} end={end} />}
               {!!conference ? (
                 <ConferenceIcon className={cn("filter", { grayscale: !isNow })} service={conference.type} />
               ) : (
-                isToday && <WarningIcon size="1.2em" className={isNow ? "text-red-500" : "text-gray-500"} />
+                isToday && <WarningIcon size="1.2em" className={isNow || isNext ? "text-red-500" : "text-gray-500"} />
               )}
             </div>
           </h4>
         )}
-        <div className="flex items-center justify-between">
-          <h4>{summary}</h4>
-          {isExternal && <ExternalIcon className="text-gray-500" />}
+        <div className="flex items-center justify-between w-full">
+          <h4>{summary.replace("<>", "↔️")}</h4>
+          {isExternal && <ExternalIcon size="1.2em" className="text-gray-500" />}
         </div>
       </a>
     </AsComponent>
   );
 }
 
-function WaitingPill({ start }: { start: typeof dayjs }) {
+function WaitingPill({ start, end }: { start: typeof dayjs; end: typeof end }) {
   const now = useClock();
 
   // now isn't on the minute perfectly
-  const diff = start.diff(now, "seconds");
+  const isNow = start.isHappeningNowWith(end);
+
+  const _from = isNow ? end : start;
+
+  const diff = _from.diff(now, "seconds");
   const seconds = useEverySecond(diff < 60);
   const d = duration(diff < 60 ? 60 - seconds : diff);
+
+  if (isNow && diff > 2 * 60) {
+    return null;
+  }
 
   return (
     <div className="relative">
       {diff < 60 && <div className="absolute inset-[-4px] bg-rose-500 rounded-full z-[-1] animate animate-pulse" />}
       <div className={cn("bg-rose-500 rounded-full px-4 md:px-2 text-sm text-black text-center tabular-nums")}>
-        in{" "}
+        {!isNow && <>in </>}
         {diff < 60 ? (
           <>
             <strong>{d.format("s").padStart(2)}</strong>
@@ -125,6 +133,7 @@ function WaitingPill({ start }: { start: typeof dayjs }) {
             <span className="inline md:hidden">{d.format(["hH", "mM"])}</span>
           </>
         )}
+        {isNow && <> left</>}
       </div>
     </div>
   );
