@@ -83,7 +83,7 @@ export function TodoList() {
           ref={input}
           placeholder={placeholder}
           className={cn(
-            "pl-11 mt-2 bg-transparent focus:ring-2 ring-purple-500 focus:border-purple-500 p-2 font-mono text-sm rounded-md focus:outline-none w-full animate placeholder-purple-200 placeholder-opacity-0 hover:placeholder-opacity-60 focus:placeholder-opacity-60",
+            "pl-11 mt-2 bg-transparent focus:ring-2 ring-purple-500 focus:border-purple-500 p-2 font-mono rounded-md focus:outline-none w-full animate placeholder-purple-200 placeholder-opacity-0 hover:placeholder-opacity-60 focus:placeholder-opacity-60",
             isEmpty && "animate-shake"
           )}
           onFocus={onFocus}
