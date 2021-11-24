@@ -15,11 +15,11 @@ export async function getServerSideProps(context) {
 export default function JoinNow({ events = [] }) {
   const router = useRouter();
   const event = events[0];
-  //
+
   // @ts-ignore
-  const start = dayjs(`${event.start.date}T${event.start.time}`);
+  const start = dayjs.parts(event.start);
   // @ts-ignore
-  const end = dayjs(`${event.end.date}T${event.end.time}`);
+  const end = dayjs.parts(event.end);
 
   // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
@@ -47,8 +47,7 @@ export default function JoinNow({ events = [] }) {
       {isNow &&
         (seconds >= 0 ? (
           <div>
-            Redirecting to the meeting in{" "}
-            <span className="text-md text-red-500">{seconds}</span>{" "}
+            Redirecting to the meeting in <span className="text-md text-red-500">{seconds}</span>{" "}
             {seconds === 1 ? "second" : "seconds"}...
           </div>
         ) : (

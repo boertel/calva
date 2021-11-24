@@ -27,6 +27,14 @@ export default NextAuth({
   ],
   secret: process.env.SECRET,
   database: process.env.DATABASE_URL,
+  callbacks: {
+    session: async (session, user) => {
+      if (user) {
+        session.user.id = user.id;
+      }
+      return Promise.resolve(session);
+    },
+  },
 });
 
 /*

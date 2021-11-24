@@ -25,6 +25,13 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(customParseFormat);
 
+dayjs.extend(function parts(o, c, d) {
+  // @ts-ignore
+  d.parts = function ({ date, time }: { date: string; time: string }) {
+    return d(d.utc(`${date}T${time}`).format());
+  };
+});
+
 dayjs.extend(function isWeekend(o, c, d) {
   // @ts-ignore
   c.prototype.isWeekend = function () {

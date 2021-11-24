@@ -3,6 +3,7 @@ import { ReactNode, CSSProperties, forwardRef } from "react";
 import cn from "classnames";
 import dayjs from "@/dayjs";
 import { Pill, Annotation } from "@/ui";
+import { TodoList } from "./TodoList";
 
 import { useBackToElement, LeftFrom } from "@/hooks";
 
@@ -27,7 +28,7 @@ export default function Day({ year, month, day, isOff = false, children }: DayPr
   } else {
     return (
       <OtherDay year={year} month={month} day={day} isOff={isOff}>
-        <div className="flex items-center">{children}</div>
+        <div className="flex items-center w-full">{children}</div>
       </OtherDay>
     );
   }
@@ -53,6 +54,7 @@ function Today({ year, month, day, children }: DayProps) {
       </Pill>
       <OtherDay className="flex-col min-h-[60vh] border-none" year={year} month={month} day={day} ref={ref}>
         <div className="relative h-full my-6 flex flex-col justify-between">{children}</div>
+        <TodoList />
       </OtherDay>
       <Annotation style={{ gridColumn: 3 }} className="text-purple-500 justify-start text-opacity-40">
         Today
@@ -89,17 +91,17 @@ const OtherDay = forwardRef(function OtherDayRef(
       <li
         style={{ gridColumn: 2 }}
         className={cn(
-          "relative flex no-underline border-gray-800 bg-transparent transition-colors rounded-none group",
+          "relative flex no-underline border-gray-800 bg-transparent transition-colors rounded-none",
           firstOfTheMonth ? "border-t-4 border-gray-600" : "border-t",
           className
         )}
         ref={ref}
       >
         <h3
-          className={cn("self-start sticky top-0 flex items-start z-10 px-4 flex-shrink-0", {
+          className={cn("self-start sticky top-0 flex items-start z-10 px-4 flex-shrink-0 w-full", {
             "text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black": isToday,
             "w-20 justify-between": !isToday,
-            "text-white text-opacity-20 group-hover:text-opacity-100": isWeekend || isOff,
+            "text-white text-opacity-20": isWeekend || isOff,
           })}
         >
           <div>{current.format(isToday ? "dddd" : "dd")}</div>

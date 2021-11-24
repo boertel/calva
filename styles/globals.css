@@ -11,3 +11,10 @@ body.dark {
 :root {
   --shadow-color: 0deg 0% 0%;
 }
+
+input[type="checkbox"]:checked ~ * {
+  text-decoration: line-through;
+  transition: color 0.2s ease-in-out;
+  color: rgba(113, 113, 122, 1);
+  filter: grayscale(100%);
+}
