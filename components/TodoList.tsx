@@ -186,6 +186,10 @@ function Input({
     }
   }
 
+  function handleOnClick(evt: React.SyntheticEvent<HTMLInputElement>) {
+    evt.stopPropagation();
+  }
+
   const Icon = isEditable ? DoneIcon : EditIcon;
 
   return (
@@ -199,6 +203,7 @@ function Input({
         onBlur={handleOnBlur}
         ref={input}
         type="text"
+        onClick={handleOnClick}
         onKeyDown={handleOnKeyDown}
         defaultValue={children}
         className={cn(
