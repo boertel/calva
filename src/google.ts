@@ -102,7 +102,7 @@ class Google {
     const events = await this.calendar.events.list({
       calendarId,
       timeMin: dayjs().subtract(1, "day").startOf("day").toISOString(),
-      maxResults: 25,
+      maxResults: 45,
     });
 
     const { nextPageToken, items } = events.data;

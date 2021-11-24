@@ -35,7 +35,7 @@ export default function Event({
    * isPast:                                      now.isAfter(end)
    *
    */
-  const { timeFormat } = useSettings();
+  const { intervalFormat } = useSettings();
 
   // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
@@ -69,7 +69,7 @@ export default function Event({
                   "border border-dashed border-purple-500 bg-purple-500": isFuture,
                 }
               )
-            : "flex flex-row items-center gap-2",
+            : "flex flex-row items-center w-full gap-2",
           className
         )}
         style={style}
@@ -80,8 +80,8 @@ export default function Event({
               className={cn("flex items-center gap-2", { "text-red-500 font-medium": isNow, "text-gray-500": !isNow })}
             >
               {/* @ts-ignore */}
-              {start.format(timeFormat)} – {/* @ts-ignore */}
-              {end.format(timeFormat)}
+              {start.format(intervalFormat[0])} – {/* @ts-ignore */}
+              {end.format(intervalFormat[1])}
               {isRecurringEvent && <RecurringIcon />}
             </div>
             <div className="flex items-center gap-2">
@@ -94,8 +94,8 @@ export default function Event({
             </div>
           </h4>
         )}
-        <div className="flex items-center justify-between w-full">
-          <h4>{summary.replace("<>", "↔️")}</h4>
+        <div className="flex items-center justify-between w-full pr-4">
+          <h4 className={cn({ "w-full text-right": isAllDay })}>{summary.replace("<>", "↔️")}</h4>
           {isExternal && <ExternalIcon size="1.2em" className="text-gray-500" />}
         </div>
       </a>
