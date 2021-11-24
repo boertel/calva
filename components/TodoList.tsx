@@ -2,7 +2,7 @@ import { ReactNode, useState, ComponentPropsWithoutRef, useEffect, useCallback, 
 import cn from "classnames";
 import dayjs from "@/dayjs";
 import { EditIcon, DoneIcon, TodoDelayedIcon, TodoDoneIcon, TodoTodoIcon } from "@/icons";
-import type { Todo } from "@/todos";
+import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
 
 function useEventListener(type: string, listener: (evt: any) => void) {
@@ -37,8 +37,9 @@ export function TodoList() {
   function onKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
     if (evt.key === "Escape") {
       evt.currentTarget.blur();
-    } else if (evt.key === "Enter") {
-      save(evt);
+    } else if (evt.key === "Enter" || evt.key === "Tab") {
+      save(evt.currentTarget.value, evt.metaKey ? "done" : "todo");
+      evt.currentTarget.value = "";
     }
   }
 
@@ -46,14 +47,12 @@ export function TodoList() {
     setIsEmpty(false);
   }
 
-  function save(evt: React.SyntheticEvent<HTMLInputElement>) {
-    const { value } = evt.currentTarget;
+  function save(value: string, status: TodoStatus = "todo") {
     if (value.length > 0) {
       addTodo({
-        status: evt.metaKey ? "done" : "todo",
+        status,
         text: value,
       });
-      evt.currentTarget.value = "";
     } else {
       setIsEmpty(true);
     }
@@ -88,7 +87,6 @@ export function TodoList() {
             isEmpty && "animate-shake"
           )}
           onFocus={onFocus}
-          onBlur={save}
           onKeyDown={onKeyDown}
         />
       </li>

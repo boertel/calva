@@ -3,6 +3,7 @@ import cuid from "cuid";
 import useSWR, { useSWRConfig } from "swr";
 import dayjs from "@/dayjs";
 
+export type TodoStatus = "todo" | "done" | "delayed";
 export type Todo = {
   id: string;
   text: string;
