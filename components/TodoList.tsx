@@ -253,9 +253,9 @@ function Label({ children, className, ...props }: ComponentPropsWithoutRef<"div"
 function Checkbox({ status, onClick, onContextMenu }: { status: string; onClick: any; onContextMenu: any }) {
   return (
     <button onClick={onClick} onContextMenu={onContextMenu}>
-      {status === "todo" && <TodoTodoIcon className="w-5 h-5 text-purple-500" />}
-      {status === "done" && <TodoDoneIcon className="w-5 h-5 text-purple-500" />}
-      {status === "delayed" && <TodoDelayedIcon className="w-5 h-5 text-purple-500" />}
+      {status === "todo" && <TodoTodoIcon className="w-5 h-5 text-yellow-500" />}
+      {status === "done" && <TodoDoneIcon className="w-5 h-5 text-green-500" />}
+      {status === "delayed" && <TodoDelayedIcon className="w-5 h-5 text-blue-500" />}
     </button>
   );
 }
