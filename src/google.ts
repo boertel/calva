@@ -145,6 +145,7 @@ function parseEvent(
     start,
     end,
     recurrence,
+    recurringEventId,
     hangoutLink,
     attendees,
     conferenceData,
@@ -208,6 +209,7 @@ function parseEvent(
     status,
     urls,
     conference,
+    isRecurringEvent: !!recurrence || !!recurringEventId,
     recurrence: recurrence || null,
     attendees:
       attendees

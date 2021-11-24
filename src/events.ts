@@ -14,6 +14,7 @@ export interface IEvent {
     url?: string;
   };
   isOff?: boolean;
+  isRecurringEvent?: boolean;
   recurrence?: string[];
   attendees: Attendee[];
   isAllDay?: boolean;

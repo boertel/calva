@@ -15,7 +15,7 @@ export default function Event({
   start,
   summary,
   conference,
-  recurrence,
+  isRecurringEvent,
   attendees,
   isAllDay,
   isNext = false,
@@ -82,7 +82,7 @@ export default function Event({
               {/* @ts-ignore */}
               {start.format(timeFormat)} – {/* @ts-ignore */}
               {end.format(timeFormat)}
-              {!!recurrence && <RecurringIcon />}
+              {isRecurringEvent && <RecurringIcon />}
             </div>
             <div className="flex items-center gap-2">
               {(isNext || isNow) && <WaitingPill start={start} end={end} />}

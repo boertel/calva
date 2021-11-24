@@ -71,7 +71,7 @@ export function TodoList() {
 
   const key = dayjs().format("YYYY-MM-DD");
   return (
-    <ul className="py-6">
+    <ul className="pt-6 pb-4">
       {todos
         .filter(({ date }: Todo) => dayjs.utc(date).format("YYYY-MM-DD") === key)
         .map(({ id, status, text }: Todo) => (
@@ -211,7 +211,8 @@ function Input({
         className={cn(
           "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none pl-10 pr-10",
           { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500": isEditable },
-          status === "done" && "line-through filter grayscale",
+          status === "done" && !isEditable && "line-through",
+          status === "done" && "filter grayscale",
           className
         )}
       />

@@ -44,15 +44,17 @@ export default function JoinNow({ events = [] }) {
 
   return (
     <Join events={events}>
-      {isNow &&
-        (seconds >= 0 ? (
-          <div>
-            Redirecting to the meeting in <span className="text-md text-red-500">{seconds}</span>{" "}
-            {seconds === 1 ? "second" : "seconds"}...
-          </div>
-        ) : (
-          <>Have fun 🎉!</>
-        ))}
+      <div className="text-center">
+        {isNow &&
+          (seconds >= 0 ? (
+            <>
+              Redirecting to the meeting in <span className="text-md text-red-500">{seconds}</span>{" "}
+              {seconds === 1 ? "second" : "seconds"}...
+            </>
+          ) : (
+            <>Have fun 🎉!</>
+          ))}
+      </div>
     </Join>
   );
 }
