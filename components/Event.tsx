@@ -55,8 +55,10 @@ export default function Event({
 
   const AsComponent = conference?.url ? Link : "div";
   return (
-    <AsComponent href={conference?.url} target="_blank" rel="noopener" className="w-full">
+    <AsComponent href={conference?.url} className="w-full">
       <a
+        target="_blank"
+        rel="noopener"
         className={cn(
           isToday
             ? cn(
