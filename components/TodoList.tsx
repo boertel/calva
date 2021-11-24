@@ -50,7 +50,7 @@ export function TodoList() {
     const { value } = evt.currentTarget;
     if (value.length > 0) {
       addTodo({
-        status: "todo",
+        status: evt.metaKey ? "done" : "todo",
         text: value,
       });
       evt.currentTarget.value = "";

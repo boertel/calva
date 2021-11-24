@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import cuid from "cuid";
 import useSWR, { useSWRConfig } from "swr";
 import dayjs from "@/dayjs";
 
@@ -17,20 +18,22 @@ export function useTodos(shouldFetch: boolean = true) {
 
   const addTodo = useCallback(
     (todo: Omit<Todo, "id" | "date">) => {
+      const todoWithId = {
+        ...todo,
+        text: todo.text.trim(),
+        id: cuid(),
+      };
       fetch(path, {
         method: "POST",
-        body: JSON.stringify(todo),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          mutate(
-            path,
-            (todos: Todo[]) => {
-              return [...(todos || []), data];
-            },
-            false
-          );
-        });
+        body: JSON.stringify(todoWithId),
+      });
+      mutate(
+        path,
+        (todos: Todo[]) => {
+          return [...(todos || []), todoWithId];
+        },
+        false
+      );
     },
     [mutate, path]
   );

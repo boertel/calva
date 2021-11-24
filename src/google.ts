@@ -148,6 +148,7 @@ function parseEvent(
     hangoutLink,
     attendees,
     conferenceData,
+    ...rest
   },
   index: number
 ) {
@@ -174,6 +175,11 @@ function parseEvent(
       } else if (hostname.endsWith("teams.microsoft.com")) {
         conference.type = "teams";
         if (pathname.startsWith("/l/")) {
+          conference.url = url;
+        }
+      } else if (hostname.endsWith("headroom.com")) {
+        conference.type = "headroom";
+        if (pathname.startsWith("/meet/")) {
           conference.url = url;
         }
       }

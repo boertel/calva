@@ -36,7 +36,7 @@ export default except(async function todo(req: NextApiRequest, res: NextApiRespo
 
     return res.json(todos);
   } else if (req.method === "POST") {
-    const { id, ...body } = JSON.parse(req.body);
+    const body = JSON.parse(req.body);
     const todo = await db.todo.create({
       data: {
         ...body,

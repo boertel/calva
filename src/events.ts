@@ -25,6 +25,7 @@ export enum ConferenceService {
   Zoom = "zoom",
   GoogleMeet = "meet",
   MicrosoftTeams = "teams",
+  Headroom = "headroom",
 }
 
 export function useEvents() {
