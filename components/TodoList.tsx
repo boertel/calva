@@ -1,7 +1,7 @@
 import { ReactNode, useState, ComponentPropsWithoutRef, useEffect, useCallback, useRef } from "react";
 import cn from "classnames";
 import dayjs from "@/dayjs";
-import { EditIcon, DoneIcon, TodoDelayedIcon, TodoDoneIcon, TodoTodoIcon } from "@/icons";
+import { EditIcon, DoneIcon, TodoDelayedIcon, TodoDoneIcon, TodoTodoIcon, TodoCancelledIcon } from "@/icons";
 import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
 
@@ -153,7 +153,7 @@ function Input({
   onContextMenu: any;
   onBlur: any;
   children: string;
-  status: string;
+  status: TodoStatus;
 }) {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const input = useRef<HTMLInputElement>(null);
@@ -195,7 +195,7 @@ function Input({
     <div
       onClick={onClick}
       onContextMenu={onContextMenu}
-      className={cn("group w-full flex items-center justify-between select-none font-mono text-sm relative", {})}
+      className={cn("group w-full flex items-center justify-between select-none font-mono text-sm relative")}
     >
       <div className={cn("absolute top-0 bottom-0 left-0 flex items-center px-3 ")}>
         <Checkbox status={status} onContextMenu={onContextMenu} onClick={onClick} />
@@ -209,7 +209,7 @@ function Input({
         onKeyDown={handleOnKeyDown}
         defaultValue={children}
         className={cn(
-          "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none pl-10 pr-10",
+          "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none pl-10 group-hover:pr-10",
           { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500": isEditable },
           status === "done" && !isEditable && "line-through",
           status === "done" && "filter grayscale",
@@ -250,12 +250,13 @@ function Label({ children, className, ...props }: ComponentPropsWithoutRef<"div"
   );
 }
 
-function Checkbox({ status, onClick, onContextMenu }: { status: string; onClick: any; onContextMenu: any }) {
+function Checkbox({ status, onClick, onContextMenu }: { status: TodoStatus; onClick: any; onContextMenu: any }) {
   return (
     <button onClick={onClick} onContextMenu={onContextMenu}>
       {status === "todo" && <TodoTodoIcon className="w-5 h-5 text-yellow-500" />}
       {status === "done" && <TodoDoneIcon className="w-5 h-5 text-green-500" />}
       {status === "delayed" && <TodoDelayedIcon className="w-5 h-5 text-blue-500" />}
+      {status === "cancelled" && <TodoCancelledIcon className="w-5 h-5 text-red-500" />}
     </button>
   );
 }

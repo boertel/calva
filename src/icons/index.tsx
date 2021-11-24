@@ -23,3 +23,4 @@ export const DoneIcon = size(X);
 export const TodoTodoIcon = size(Circle);
 export const TodoDelayedIcon = size(ChevronRight);
 export const TodoDoneIcon = size(CheckCircle);
+export const TodoCancelledIcon = size(X);

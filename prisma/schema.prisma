@@ -28,6 +28,7 @@ model Account {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  Calendar Calendar[]
   @@unique([provider, providerAccountId])
 }
 
@@ -69,13 +70,31 @@ model Todo {
   updatedAt DateTime @updatedAt
 }
 
-// model Event {
-//     id          String @id @default(cuid())
-//     start       DateTime
-//     end         DateTime
-//     accountId   String
-//     status      String
-//     summary     String
-//     description String
-//     account     Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
-// }
+model Calendar {
+  id        String   @id @default(cuid())
+  ownerId   String
+  slug      String
+  owner     Account  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Event     Event[]
+
+  @@unique([ownerId, slug])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  startDate   String
+  endDate     String
+  startTime   String
+  endTime     String
+  timezone    String
+  recurrence  String
+  status      String
+  summary     String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  calendarId  String
+  calendar    Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+}
