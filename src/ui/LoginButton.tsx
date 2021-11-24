@@ -6,7 +6,7 @@ export function LoginButton() {
     <>
       <button
         onClick={() => signIn("google")}
-        className="bg-white relative flex text-black justify-center items-center px-6 py-2 rounded-md space-x-2 hover:bg-white"
+        className="bg-white relative flex text-black justify-center items-center px-6 py-2 rounded-md space-x-2 hover:bg-white w-full md:w-auto"
       >
         <GoogleLogo className="text-4xl" />
         <span>Login with Google</span>
