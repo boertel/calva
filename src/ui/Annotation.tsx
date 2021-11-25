@@ -13,10 +13,7 @@ export function Annotation({
   return (
     <li
       style={style}
-      className={cn(
-        "top-0 flex items-start text-4xl px-6 py-2 font-black bg-black sticky hidden md:flow-root",
-        className
-      )}
+      className={cn("top-0 flex items-start text-4xl px-6 py-2 font-black sticky hidden md:flow-root", className)}
     >
       {children}
     </li>

@@ -117,7 +117,7 @@ function TodoItem({ status, text, id }: Todo) {
     evt.preventDefault();
     updateTodo({
       id,
-      status: status === "done" ? "todo" : "done",
+      status: ["cancelled", "delayed", "done"].includes(status) ? "todo" : "done",
     } as Todo);
   }
 

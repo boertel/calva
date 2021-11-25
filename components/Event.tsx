@@ -77,6 +77,7 @@ export default function Event({
         {start && end && !isAllDay && (
           <h4 className="flex justify-between items-center gap-2 flex-shrink-0">
             <div
+              title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}
               className={cn("flex items-center gap-2", { "text-red-500 font-medium": isNow, "text-gray-500": !isNow })}
             >
               {/* @ts-ignore */}
@@ -94,9 +95,13 @@ export default function Event({
             </div>
           </h4>
         )}
-        <div className="flex items-center justify-between w-full pr-4">
+        <div className={cn("flex items-center justify-between w-full", { "pr-4": !isToday })}>
           <h4 className={cn({ "w-full text-right": isAllDay })}>{summary.replace("<>", "↔️")}</h4>
-          {isExternal && <ExternalIcon size="1.2em" className="text-gray-500" />}
+          {isExternal && (
+            <div title="⚠️  meeting with people outside of your organization">
+              <ExternalIcon size="1.2em" className="text-gray-500" />
+            </div>
+          )}
         </div>
       </a>
     </AsComponent>

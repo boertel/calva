@@ -81,7 +81,7 @@ const OtherDay = forwardRef(function OtherDayRef(
       {(current.date() === 1 || current.isToday()) && (
         <Annotation
           style={{ gridColumn: 1 }}
-          className={cn("justify-end", {
+          className={cn("justify-end z-20", {
             "text-purple-500": current.isThisMonth(),
           })}
         >
