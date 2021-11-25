@@ -4,6 +4,7 @@ export { default as GoogleMeetIcon } from "./GoogleMeetIcon";
 export { default as HeadroomIcon } from "./HeadroomIcon";
 export { default as GoogleLogo } from "./GoogleLogo";
 export * from "./ExternalIcon";
+export * from "./HideIcon";
 
 import { AlertCircle, CheckCircle, Repeat, ChevronRight, Circle, Edit, X, Trash } from "react-feather";
 

@@ -51,7 +51,7 @@ function Events({ events, className }: { className?: string; events: Map<string,
           // @ts-ignore
           const currentEvents = events.get(key)?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
-          const hasRecurringMeetings = !!currentEvents.find(({ recurrence }) => !!recurrence);
+          const hasRecurringMeetings = !!currentEvents.find(({ isRecurringEvent }) => isRecurringEvent);
 
           let inMeetingCurrently = false;
 
@@ -83,7 +83,7 @@ function Events({ events, className }: { className?: string; events: Map<string,
                 return (
                   <Fragment key={event.id}>
                     <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"} />
-                    {(current.isToday() || !event.recurrence) && (
+                    {(current.isToday() || !event.isRecurringEvent) && (
                       <Event isNext={!inMeetingCurrently && isNext} {...event} />
                     )}
                     {current.isToday() &&

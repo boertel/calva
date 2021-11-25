@@ -9,6 +9,8 @@ import {
   TodoDoneIcon,
   TodoTodoIcon,
   TodoCancelledIcon,
+  HideIcon,
+  ShowIcon,
 } from "@/icons";
 import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
@@ -28,6 +30,7 @@ function choice<T>(choices: T[]): T {
 export function TodoList() {
   const { todos, addTodo } = useTodos();
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
+  const [showOnlyTodo, setShowOnlyTodo] = useState<boolean>(true);
 
   const input = useRef<HTMLInputElement>(null);
 
@@ -81,17 +84,22 @@ export function TodoList() {
   return (
     <ul className="pt-6 pb-4">
       {todos
-        .filter(({ date }: Todo) => dayjs.utc(date).format("YYYY-MM-DD") === key)
+        .filter(({ date, status }: Todo) =>
+          showOnlyTodo ? status === "todo" : dayjs.utc(date).format("YYYY-MM-DD") === key
+        )
         .map(({ id, status, text }: Todo) => (
           <TodoItem key={id} id={id} status={status} text={text} />
         ))}
-      <li className="sticky bottom-0 px-4 pb-2 bg-black mt-2">
+      <li className="sticky bottom-0 px-2 pb-2 bg-black mt-2 flex items-center">
+        <button className="px-3" onClick={() => setShowOnlyTodo((prev) => !prev)}>
+          {showOnlyTodo ? <HideIcon className="w-5 h-5" /> : <ShowIcon className="w-5 h-5" />}
+        </button>
         <input
           type="text"
           ref={input}
           placeholder={placeholder}
           className={cn(
-            "md:pl-7 bg-transparent focus:ring-2 ring-purple-500 p-2 font-mono rounded-md focus:outline-none w-full animate placeholder-purple-200",
+            "md:pl-2 bg-transparent focus:ring-2 ring-purple-500 p-2 font-mono rounded-md focus:outline-none w-full animate placeholder-purple-200",
             isEmpty && "animate-shake"
           )}
           onFocus={onFocus}
@@ -142,13 +150,12 @@ function TodoItem({ status, text, id }: Todo) {
   return (
     <li className="pl-2 pr-4">
       <Label
-        className={cn(
-          "transition-opacity",
-          ["delayed", "done", "cancelled"].includes(status)
-            ? "text-gray-500 hover:text-gray-600"
-            : "hover:text-purple-300",
-          { "opacity-30 hover:opacity-100": status === "delayed" }
-        )}
+        className={cn("transition-opacity", ["delayed", "done", "cancelled"].includes(status) ? "text-gray-500" : "", {
+          "hover:text-green-500": status === "done",
+          "hover:text-blue-500 opacity-30 hover:opacity-100": status === "delayed",
+          "hover:text-red-500": status === "cancelled",
+          "hover:text-yellow-500": status === "todo",
+        })}
       >
         <Input onContextMenu={onContextMenu} onClick={onClick} onBlur={onBlur} onDelete={onDelete} status={status}>
           {text}
@@ -217,7 +224,7 @@ function Input({
       onContextMenu={onContextMenu}
       className={cn("group w-full flex items-center justify-between select-none font-mono text-sm relative")}
     >
-      <div className={cn("absolute top-0 bottom-0 left-0 flex items-center px-3 ")}>
+      <div className={cn("absolute top-0 bottom-0 left-0 flex items-center pl-3 ")}>
         <Checkbox status={status} onContextMenu={onContextMenu} onClick={onClick} />
       </div>
       <input
@@ -229,10 +236,9 @@ function Input({
         onKeyDown={handleOnKeyDown}
         defaultValue={children}
         className={cn(
-          "bg-transparent p-2 font-mono text-sm focus:text-base rounded-md w-full animate focus:outline-none pl-10 group-hover:pr-20",
-          { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500": isEditable },
+          "bg-transparent p-2 font-mono text-sm focus:text-base rounded-md w-full animate focus:outline-none pl-11 group-hover:pr-20",
+          { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500 text-white": isEditable },
           ["done", "cancelled"].includes(status) && !isEditable && "line-through",
-          ["done", "cancelled"].includes(status) && "filter grayscale",
           className
         )}
       />

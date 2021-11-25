@@ -21,6 +21,7 @@ export default function Event({
   isNext = false,
   style,
   className,
+  rule,
 }: IEvent & {
   style?: CSSProperties;
   className?: string;
@@ -69,7 +70,7 @@ export default function Event({
                   "border border-dashed border-purple-500 bg-purple-500": isFuture,
                 }
               )
-            : "flex flex-row items-center w-full gap-2",
+            : "flex flex-row items-center gap-2 w-full flex-wrap",
           className
         )}
         style={style}
@@ -83,7 +84,11 @@ export default function Event({
               {/* @ts-ignore */}
               {start.format(intervalFormat[0])} – {/* @ts-ignore */}
               {end.format(intervalFormat[1])}
-              {isRecurringEvent && <RecurringIcon />}
+              {isRecurringEvent && (
+                <Tooltip title={rule && rule.toText()}>
+                  <RecurringIcon />
+                </Tooltip>
+              )}
             </div>
             <div className="flex items-center gap-2">
               {(isNext || isNow) && <WaitingPill start={start} end={end} />}
@@ -95,12 +100,12 @@ export default function Event({
             </div>
           </h4>
         )}
-        <div className={cn("flex items-center justify-between w-full", { "pr-4": !isToday })}>
+        <div className={cn("flex items-center justify-between flex-grow", { "pr-4": !isToday })}>
           <h4 className={cn({ "w-full text-right": isAllDay })}>{summary.replace("<>", "↔️")}</h4>
           {isExternal && (
-            <div title="⚠️  meeting with people outside of your organization">
+            <Tooltip title="⚠️  meeting with people outside of your organization">
               <ExternalIcon size="1.2em" className="text-gray-500" />
-            </div>
+            </Tooltip>
           )}
         </div>
       </a>
@@ -144,4 +149,8 @@ function WaitingPill({ start, end }: { start: typeof dayjs; end: typeof end }) {
       </div>
     </div>
   );
+}
+
+function Tooltip({ title, ...props }: ComponentPropsWithoutRef<"div">) {
+  return <div title={title} {...props} />;
 }

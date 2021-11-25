@@ -45,7 +45,7 @@ export function useEvents() {
         const generatedStart = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
         // @ts-ignore
         const generatedEnd = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
-        events = set(events, event, generatedStart, generatedEnd);
+        events = set(events, { ...event, rule }, generatedStart, generatedEnd);
       });
     } else if (!event.start.time || !event.start.time) {
       let start = dayjs(event.start.date).startOf("day");
