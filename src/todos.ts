@@ -21,6 +21,7 @@ export function useTodos(shouldFetch: boolean = true) {
     (todo: Omit<Todo, "id" | "date">) => {
       const todoWithId = {
         ...todo,
+        date: dayjs().format("YYYY-MM-DD[T00:00:00.000Z]"),
         text: todo.text.trim(),
         id: cuid(),
       };
