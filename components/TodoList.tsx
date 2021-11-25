@@ -251,7 +251,7 @@ function Input({
             onDelete(evt);
           }}
         >
-          <DeleteIcon className="w-5 h-5 text-red-500 hover:fill-red" />
+          <DeleteIcon className="w-5 h-5 hover:text-red-500 hover:fill-red" />
         </button>
         <button
           onClick={(evt) => {
