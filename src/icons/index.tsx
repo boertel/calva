@@ -5,7 +5,7 @@ export { default as HeadroomIcon } from "./HeadroomIcon";
 export { default as GoogleLogo } from "./GoogleLogo";
 export * from "./ExternalIcon";
 
-import { AlertCircle, CheckCircle, Repeat, ChevronRight, Circle, Edit, X } from "react-feather";
+import { AlertCircle, CheckCircle, Repeat, ChevronRight, Circle, Edit, X, Trash } from "react-feather";
 
 const size = (WrappedComponent: React.FunctionComponent) => {
   return function SizeIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -18,6 +18,7 @@ export const WarningIcon = size(AlertCircle);
 export const CheckCircleIcon = size(CheckCircle);
 export const RecurringIcon = size(Repeat);
 export const EditIcon = size(Edit);
+export const DeleteIcon = size(Trash);
 export const DoneIcon = size(X);
 
 export const TodoTodoIcon = size(Circle);

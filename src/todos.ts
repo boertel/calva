@@ -12,7 +12,8 @@ export type Todo = {
 };
 
 export function useTodos(shouldFetch: boolean = true) {
-  const today = dayjs().format("YYYY-MM-DD");
+  //const today = dayjs().format("YYYY-MM-DD");
+  const today = "2021-11-25";
   const path = `/api/todos?today=${today}`;
   const { mutate } = useSWRConfig();
   const { data = [], ...rest } = useSWR<Todo>(shouldFetch ? path : null);

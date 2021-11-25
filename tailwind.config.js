@@ -5,6 +5,10 @@ module.exports = {
   purge: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class", // or 'media' or 'class'
   theme: {
+    fill: {
+      red: "rgba(239, 68, 68, 0.4)",
+      gray: "rgba(113, 113, 122, 0.8)",
+    },
     extend: {
       colors: colors,
       gridTemplateColumns: {
