@@ -1,7 +1,15 @@
-import { ReactNode, useState, ComponentPropsWithoutRef, useEffect, useCallback, useRef } from "react";
+import { useState, ComponentPropsWithoutRef, useEffect, useCallback, useRef } from "react";
 import cn from "classnames";
 import dayjs from "@/dayjs";
-import { EditIcon, DoneIcon, TodoDelayedIcon, TodoDoneIcon, TodoTodoIcon, TodoCancelledIcon } from "@/icons";
+import {
+  EditIcon,
+  DoneIcon,
+  DeleteIcon,
+  TodoDelayedIcon,
+  TodoDoneIcon,
+  TodoTodoIcon,
+  TodoCancelledIcon,
+} from "@/icons";
 import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
 
@@ -123,16 +131,26 @@ function TodoItem({ status, text, id }: Todo) {
     }
   }
 
+  function onDelete(evt: React.SyntheticEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    updateTodo({
+      id,
+      status: status === "cancelled" ? "todo" : "cancelled",
+    } as Todo);
+  }
+
   return (
     <li className="pl-2 pr-4">
       <Label
         className={cn(
           "transition-opacity",
-          ["delayed", "done"].includes(status) ? "text-gray-500 hover:text-gray-600" : "hover:text-purple-300",
+          ["delayed", "done", "cancelled"].includes(status)
+            ? "text-gray-500 hover:text-gray-600"
+            : "hover:text-purple-300",
           { "opacity-30 hover:opacity-100": status === "delayed" }
         )}
       >
-        <Input onContextMenu={onContextMenu} onClick={onClick} onBlur={onBlur} status={status}>
+        <Input onContextMenu={onContextMenu} onClick={onClick} onBlur={onBlur} onDelete={onDelete} status={status}>
           {text}
         </Input>
       </Label>
@@ -146,11 +164,13 @@ function Input({
   onClick,
   onBlur,
   onContextMenu,
+  onDelete,
   status,
 }: {
   className?: string;
   onClick: any;
   onContextMenu: any;
+  onDelete: any;
   onBlur: any;
   children: string;
   status: TodoStatus;
@@ -209,32 +229,43 @@ function Input({
         onKeyDown={handleOnKeyDown}
         defaultValue={children}
         className={cn(
-          "bg-transparent p-2 font-mono text-sm rounded-md w-full animate focus:outline-none pl-10 group-hover:pr-10",
+          "bg-transparent p-2 font-mono text-sm focus:text-base rounded-md w-full animate focus:outline-none pl-10 group-hover:pr-20",
           { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500": isEditable },
-          status === "done" && !isEditable && "line-through",
-          status === "done" && "filter grayscale",
+          ["done", "cancelled"].includes(status) && !isEditable && "line-through",
+          ["done", "cancelled"].includes(status) && "filter grayscale",
           className
         )}
       />
       <div
         className={cn(
-          "absolute top-0 bottom-0 right-0 flex items-center px-3 transition-opacity text-white text-opacity-40 hover:text-opacity-100",
+          "absolute top-0 bottom-0 right-0 flex items-center px-3 transition-opacity text-white text-opacity-40 hover:text-opacity-100 space-x-3",
           {
             "opacity-0 group-hover:opacity-100": !isEditable,
             "opacity-100": isEditable,
           }
         )}
-        onClick={(evt) => {
-          evt.stopPropagation();
-          setIsEditable(true);
-          setTimeout(() => {
-            if (input.current) {
-              input.current.focus();
-            }
-          }, 1);
-        }}
       >
-        <Icon className="w-5 h-5" />
+        <button
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onDelete(evt);
+          }}
+        >
+          <DeleteIcon className="w-5 h-5 text-red-500 hover:fill-red" />
+        </button>
+        <button
+          onClick={(evt) => {
+            evt.stopPropagation();
+            setIsEditable(true);
+            setTimeout(() => {
+              if (input.current) {
+                input.current.focus();
+              }
+            }, 1);
+          }}
+        >
+          <Icon className="w-5 h-5 hover:fill-gray" />
+        </button>
       </div>
     </div>
   );

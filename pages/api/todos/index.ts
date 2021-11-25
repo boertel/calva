@@ -13,12 +13,11 @@ export default except(async function todo(req: NextApiRequest, res: NextApiRespo
   // @ts-ignore
   const today = dayjs(req.query.today);
   if (req.method === "GET") {
-    // TODO this needs to happen on user timezone midnight
     await db.todo.updateMany({
       where: {
         userId,
         date: { lt: today.toDate() },
-        status: { not: "done" },
+        status: { notIn: ["done", "cancelled"] },
       },
       data: {
         date: today.toDate(),
