@@ -32,7 +32,7 @@ export default function Home() {
   );
 }
 
-function Events({ events, className }: { className?: string; events: Map<string, IEvent[]> }) {
+function Events({ events, className }: { className?: string; events: { [key: string]: IEvent[] } }) {
   const now = useClock();
 
   const days = range(0, 12 * 7);
@@ -49,7 +49,7 @@ function Events({ events, className }: { className?: string; events: Map<string,
           const current = now.add(index, "days");
           const key = current.format("YYYY-MM-DD");
           // @ts-ignore
-          const currentEvents = events.get(key)?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
+          const currentEvents = events[key]?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
           const hasRecurringMeetings = !!currentEvents.find(({ isRecurringEvent }) => isRecurringEvent);
 

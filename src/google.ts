@@ -105,32 +105,76 @@ class Google {
       maxResults: 45,
     });
 
-    const { nextPageToken, items } = events.data;
+    let { nextPageToken, items } = events.data;
+    let eventsByDay = {};
+    items.forEach((item: any) => {
+      const { recurrence, start } = item;
+      if (start) {
+        let event = parseEvent(item);
+        if (recurrence) {
+          // FIXME deal with EXDATE and rrule.js
+          const dtstart = `DTSTART:${dayjs(
+            `${dayjs(event.start.date).format("YYYY-MM-DD")}T${event.start.time}:00`
+          ).format("YYYYMMDD[T]HHmm00[Z]")}`;
+          const recurring = rrulestr(
+            [dtstart].concat(recurrence.filter((str: string) => !str.startsWith("EXDATE"))).join("\n")
+          );
+          if (!recurring.options.until || dayjs().isBefore(recurring.options.until)) {
+            recurring
+              .between(dayjs().subtract(2, "days").toDate(), dayjs().add(44, "days").toDate())
+              .forEach((date) => {
+                // @ts-ignore
+                const generatedStart = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
+                // @ts-ignore
+                const generatedEnd = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
+                eventsByDay = set(eventsByDay, event, generatedStart, generatedEnd);
+              });
+          }
+        } else if (!event.start.time || !event.start.time) {
+          let start = dayjs(event.start.date).startOf("day");
+          const end = dayjs(event.end.date).endOf("day");
+          const diff = end.diff(start, "day");
+          event.isAllDay = true;
+          if (diff > 0) {
+            for (let i = 1; i < diff; i += 1) {
+              eventsByDay = set(eventsByDay, event, start.clone().startOf("day"), start.clone().endOf("day"));
+              start = start.add(24, "hour");
+            }
+          } else {
+            eventsByDay = set(eventsByDay, event, start, end);
+          }
+        } else {
+          // @ts-ignore
+          eventsByDay = set(eventsByDay, event, dayjs.parts(event.start), dayjs.parts(event.end));
+        }
+      }
+    });
+
     return {
       nextPageToken,
-      events: items
-        .map(({ recurrence, ...rest }: any) => {
-          let recurring = null;
-          if (recurrence) {
-            // FIXME deal with EXDATE and rrule.js
-            recurrence = recurrence.filter((str: string) => !str.startsWith("EXDATE"));
-            recurring = rrulestr(recurrence.join("\n"));
-          }
-          return {
-            ...rest,
-            recurrence,
-            recurring,
-          };
-        })
-        .filter(({ start, summary, recurring }) => {
-          if (recurring && recurring?.options?.until) {
-            return dayjs().isAfter(recurring.options.until);
-          }
-          return !!start;
-        })
-        .map(parseEvent),
+      events: eventsByDay,
     };
   }
+}
+
+function set(events: { [key: string]: IEvent[] }, event: IEvent, start?: any, end?: any): { [key: string]: IEvent[] } {
+  const _start = start || event.start;
+  const _end = end || event.end;
+
+  if (!_start) {
+    return events;
+  }
+  const key = start.format("YYYY-MM-DD");
+
+  let eventsOfTheDay = events[key] || [];
+  eventsOfTheDay.push({
+    ...event,
+    start: _start,
+    end: _end,
+  });
+  events[key] = eventsOfTheDay;
+
+  return events;
 }
 
 function parseEvent(
@@ -209,6 +253,7 @@ function parseEvent(
     status,
     urls,
     conference,
+    recurringEventId,
     isRecurringEvent: !!recurrence || !!recurringEventId,
     recurrence: recurrence || null,
     attendees:
