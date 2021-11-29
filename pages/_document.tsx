@@ -11,6 +11,10 @@ class MyDocument extends Document {
       <Html>
         <Head>
           <link rel="icon" type="image/png" href="/favicon.png" />
+          <link rel="apple-touch-icon" href="/favicon.png" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+          <meta name="apple-mobile-web-app-title" content="calva" />
         </Head>
         <body className="dark">
           <Main />
