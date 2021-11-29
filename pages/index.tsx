@@ -97,7 +97,7 @@ function Events({ events, className }: { className?: string; events: { [key: str
           );
         })}
       </ul>
-      <UserMenu />
+      <UserMenu href="/settings" />
     </>
   );
 }
