@@ -49,7 +49,6 @@ export default function Event({
   // @ts-ignore
   const isToday = start ? start.isToday() : false;
 
-  const user = useUser();
   const isExternal = attendees.find(({ email }) => {
     const [, domain] = email.split("@");
     return domain !== user?.email.split("@")[1];

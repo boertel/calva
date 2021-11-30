@@ -30,7 +30,7 @@ function choice<T>(choices: T[]): T {
 export function TodoList() {
   const { todos, addTodo } = useTodos();
   const [isEmpty, setIsEmpty] = useState<boolean>(false);
-  const [showOnlyTodo, setShowOnlyTodo] = useState<boolean>(true);
+  const [showOnlyTodo, setShowOnlyTodo] = useState<boolean>(false);
 
   const input = useRef<HTMLInputElement>(null);
 
