@@ -1,37 +1,24 @@
 // @ts-nocheck
 import type { NextApiRequest } from "next";
+import cuid from "cuid";
 import { google as googleapis } from "googleapis";
-import Cookies from "cookies";
 import db from "@/db";
 import dayjs from "@/dayjs";
 import getUrls from "get-urls";
+import { getSession } from "next-auth/react";
+import { UnauthorizedError } from "@/errors";
 
 import { rrulestr } from "rrule";
 
-export abstract class HttpError extends Error {
-  abstract statusCode: number;
-  abstract message: string;
-}
-
-class UnauthorizedError extends HttpError {
-  statusCode: number = 401;
-  message: string = "Unauthorized";
-}
-
-const sessionCookieName =
-  process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token";
-
 export async function createGoogleFromReq(req: NextApiRequest) {
-  // @ts-ignore
-  const cookies = new Cookies(req);
-  const sessionToken = cookies.get(sessionCookieName);
-  if (!sessionToken) {
+  const session = await getSession({ req });
+  if (!session) {
     throw new UnauthorizedError();
   }
-  // FIXME `some` is dangerous since it will return other users
+  const userId = session.user.id;
   const user = await db.user.findFirst({
     where: {
-      sessions: { some: { sessionToken } },
+      id: userId,
     },
     include: {
       accounts: true,
@@ -43,16 +30,26 @@ export async function createGoogleFromReq(req: NextApiRequest) {
     throw new UnauthorizedError();
   }
 
-  const google = new Google(googleAccount.id, googleAccount.access_token, googleAccount.refresh_token);
+  const google = new Google(
+    googleAccount.id,
+    googleAccount.access_token,
+    googleAccount.refresh_token,
+    userId,
+    googleAccount.id
+  );
   return google;
 }
 
 class Google {
   token: string;
+  userId: string;
+  accountId: string;
   private calendar: any;
 
-  constructor(id: string, token: string, refresh_token: string) {
+  constructor(id: string, token: string, refresh_token: string, userId: string, accountId: string) {
     this.token = token;
+    this.userId = userId;
+    this.accountId = accountId;
     const auth = new googleapis.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
     auth.on("tokens", async (tokens) => {
       let data = {};
@@ -75,9 +72,11 @@ class Google {
     });
     auth.setCredentials({ access_token: token, refresh_token: refresh_token });
     this.calendar = googleapis.calendar({ version: "v3", auth });
-    ["events"].forEach((resource) => {
-      ["list"].forEach((method) => {
-        this.calendar[resource][method] = this.calendar[resource][method].bind(this.calendar);
+    ["events", "calendarList", "calendars", "channels"].forEach((resource) => {
+      ["list", "get", "watch", "stop"].forEach((method) => {
+        if (this.calendar[resource][method]) {
+          this.calendar[resource][method] = this.calendar[resource][method].bind(this.calendar);
+        }
       });
     });
   }
@@ -98,20 +97,60 @@ class Google {
     };
   }
 
+  async getCalendars() {
+    const response = await this.calendar.calendarList.list();
+    const { nextPageToken, items } = response.data;
+    return {
+      nextPageToken,
+      calendars: items.map(parseCalendar),
+    };
+  }
+
+  async getCalendar(calendarId) {
+    const response = await this.calendar.calendars.get({ calendarId });
+    return parseCalendar(response.data);
+  }
+
+  async watchEvents(calendarId: string = "primary", data = {}) {
+    const requestBody = {
+      id: cuid(),
+      type: "web_hook",
+      address: `https://calva.ngrok.io/api/calendars/receive`,
+      ...data,
+    };
+    console.log(requestBody);
+    const response = await this.calendar.events.watch({ calendarId, requestBody });
+    return {
+      ...response.data,
+      expiration: new Date(parseInt(response.data.expiration, 10)),
+    };
+  }
+
+  async stopWatchingEvents({ id, resourceId }) {
+    const response = await this.calendar.channels.stop({
+      requestBody: {
+        id,
+        resourceId,
+      },
+    });
+    return response.data;
+  }
+
   async getEvents(calendarId = "primary") {
-    const events = await this.calendar.events.list({
+    const response = await this.calendar.events.list({
       calendarId,
       timeMin: dayjs().subtract(1, "day").startOf("day").toISOString(),
       maxResults: 45,
     });
 
-    let { nextPageToken, items } = events.data;
-    let eventsByDay = {};
+    const { nextPageToken, items } = response.data;
+    let events = [];
     items.forEach((item: any) => {
       const { recurrence, start } = item;
       if (start) {
         let event = parseEvent(item);
         if (recurrence) {
+          // recurring events
           // FIXME deal with EXDATE and rrule.js
           const dtstart = `DTSTART:${dayjs(
             `${dayjs(event.start.date).format("YYYY-MM-DD")}T${event.start.time}:00`
@@ -127,32 +166,51 @@ class Google {
                 const generatedStart = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
                 // @ts-ignore
                 const generatedEnd = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
-                eventsByDay = set(eventsByDay, event, generatedStart, generatedEnd);
+                events.push({
+                  ...event,
+                  start: generatedStart,
+                  end: generatedEnd,
+                });
               });
           }
         } else if (!event.start.time || !event.start.time) {
+          // all day event
           let start = dayjs(event.start.date).startOf("day");
           const end = dayjs(event.end.date).endOf("day");
           const diff = end.diff(start, "day");
           event.isAllDay = true;
           if (diff > 0) {
             for (let i = 1; i < diff; i += 1) {
-              eventsByDay = set(eventsByDay, event, start.clone().startOf("day"), start.clone().endOf("day"));
+              events.push({
+                ...event,
+                start: start.clone().startOf("day"),
+                end: start.clone().endOf("day"),
+              });
               start = start.add(24, "hour");
             }
           } else {
-            eventsByDay = set(eventsByDay, event, start, end);
+            events.push({
+              ...event,
+              start,
+              end,
+            });
           }
         } else {
-          // @ts-ignore
-          eventsByDay = set(eventsByDay, event, dayjs.parts(event.start), dayjs.parts(event.end));
+          // regular event
+          events.push({
+            ...event,
+            // @ts-ignore
+            start: dayjs.parts(event.start),
+            // @ts-ignore
+            end: dayjs.parts(event.end),
+          });
         }
       }
     });
 
     return {
       nextPageToken,
-      events: eventsByDay,
+      events: events.sort(({ start: a }, { start: z }) => a - z),
     };
   }
 }
@@ -272,5 +330,13 @@ function parseEvent(
       time: end.dateTime ? dayjs(end.dateTime).format("HH:mm") : null,
       timeZone: end.timeZone || null,
     },
+  };
+}
+
+function parseCalendar({ id, summary, accessRole }) {
+  return {
+    id,
+    summary,
+    accessRole,
   };
 }

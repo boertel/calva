@@ -36,6 +36,7 @@ export default function Event({
    * isPast:                                      now.isAfter(end)
    *
    */
+  const user = useUser();
   const { intervalFormat } = useSettings();
 
   // @ts-ignore
@@ -55,8 +56,16 @@ export default function Event({
   });
 
   const AsComponent = conference?.url ? Link : "div";
+  let href = conference?.url;
+  if (href) {
+    if (href.startsWith("https://zoom.us/j/")) {
+      href = href.replace("https://zoom.us/j/", "zoommtg://zoom.us/join?confno=");
+    } else if (href.startsWith("https://meet.google.com")) {
+      href += `?authuser=${user.email}`;
+    }
+  }
   return (
-    <AsComponent href={conference?.url} className="w-full">
+    <AsComponent href={href} className="w-full">
       <a
         target="_blank"
         rel="noopener"

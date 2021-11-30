@@ -31,28 +31,32 @@ export enum ConferenceService {
 }
 
 export function useEvents() {
-  const { data = { nextPageToken: null, events: {} } } = useSWR("/api/events");
+  const { data = { nextPageToken: null, events: [] } } = useSWR("/api/events");
 
   let events: { [key: string]: IEvent[] } = {};
-  for (const key in data.events) {
-    if (data.events[key]) {
-      const recurringEventIds: string = data.events[key].map(({ recurringEventId }: IEvent) => recurringEventId);
-      events[key] = data.events[key]
-        .filter(({ id }: IEvent) => {
-          return !recurringEventIds.includes(id);
-        })
-        .map(({ id, start, end, recurringEventId, ...rest }: IEvent) => {
-          return {
-            ...rest,
-            id,
-            // @ts-ignore
-            start: dayjs(start),
-            // @ts-ignore
-            end: dayjs(end),
-          };
-        });
+  let recurringEventIds: { [key: string]: string[] } = {};
+  data.events.forEach((event: IEvent & { start: string; end: string }) => {
+    const start = event.isAllDay
+      ? dayjs.utc(event.start).hour(0).minute(0).second(0).millisecond(0)
+      : dayjs(event.start);
+    const end = event.isAllDay ? dayjs.utc(event.end).hour(0).minute(0).second(0).millisecond(0) : dayjs(event.end);
+    const key = start.format("YYYY-MM-DD");
+    if (event.recurringEventId) {
+      recurringEventIds[key] = recurringEventIds[key] || [];
+      recurringEventIds[key].push(event.recurringEventId);
     }
-  }
+    events[key] = events[key] || [];
+    events[key].push({
+      ...event,
+      // @ts-ignore
+      start,
+      // @ts-ignore
+      end,
+    });
+    if (recurringEventIds[key]) {
+      events[key] = events[key].filter(({ id }) => !recurringEventIds[key].includes(id));
+    }
+  });
 
   return {
     events,

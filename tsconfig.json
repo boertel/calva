@@ -10,6 +10,7 @@
     "paths": {
       "@/dayjs": ["src/dayjs"],
       "@/ui": ["src/ui"],
+      "@/errors": ["src/errors"],
       "@/hooks": ["src/hooks"],
       "@/google": ["src/google"],
       "@/icons": ["src/icons"],

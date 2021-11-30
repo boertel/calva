@@ -79,6 +79,8 @@ model Calendar {
   updatedAt DateTime @updatedAt
   Event     Event[]
 
+  watchId   String?
+
   @@unique([ownerId, slug])
 }
 
