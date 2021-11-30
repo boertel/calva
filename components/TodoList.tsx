@@ -238,7 +238,7 @@ function Input({
         className={cn(
           "bg-transparent p-2 font-mono text-sm focus:text-base rounded-md w-full animate focus:outline-none pl-11 group-hover:pr-20",
           { "cursor-pointer pointer-events-none ": !isEditable, "ring-2 ring-purple-500 text-white": isEditable },
-          ["done", "cancelled"].includes(status) && !isEditable && "line-through",
+          ["done", "cancelled"].includes(status) && !isEditable && "line-through filter grayscale",
           className
         )}
       />
