@@ -88,7 +88,6 @@ function Events({ events, className }: { className?: string; events: { [key: str
                 } else {
                   showEvent = !event.isRecurringEvent;
                 }
-                console.log(allDays);
 
                 return (
                   <Fragment key={event.id}>
