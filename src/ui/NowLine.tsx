@@ -1,23 +1,34 @@
-// @ts-nocheck
-import { CSSProperties } from "react";
+import { ReactNode, CSSProperties } from "react";
 import cn from "classnames";
 import { useRouter } from "next/router";
 import { useClock } from "@/hooks";
 
-export function NowLine({ style, className }: { style?: CSSProperties; className?: string }) {
+export function NowLine({
+  style,
+  className,
+  children,
+}: {
+  style?: CSSProperties;
+  className?: string;
+  children?: ReactNode;
+}) {
   const { query } = useRouter();
   const now = useClock();
   return (
     <>
       <div
         className={cn(
-          "w-full flex items-center text-red-500 transition-opacity text-opacity-40 hover:text-opacity-100",
+          "w-full flex items-center text-red-500 transition-opacity text-opacity-80 hover:text-opacity-100 cursor-pointer",
           className
         )}
         style={style}
       >
-        <div id="now" className="relative bg-red-500 bg-opacity-60 w-full h-[2px]" />
-        <div className="pl-2">{now?.format(query.format === "24h" ? "HH:mm" : "hh:mma")}</div>
+        <div id="now" className="relative bg-red-500 bg-opacity-80 w-full h-[2px]" />
+        <div className="flex gap-2 ml-2">
+          {children}
+          {/* @ts-ignore */}
+          {now?.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
+        </div>
       </div>
       <style jsx>{`
         div:hover #now {

@@ -55,6 +55,8 @@ function Events({ events, className }: { className?: string; events: { [key: str
 
           let inMeetingCurrently = false;
 
+          const allDays: string[] = currentEvents.filter(({ isAllDay }) => isAllDay).map(({ summary }) => summary);
+
           return (
             <Day
               key={key}
@@ -80,16 +82,24 @@ function Events({ events, className }: { className?: string; events: { [key: str
                   inMeetingCurrently = event.start.isHappeningNowWith(event.end);
                 }
 
+                let showEvent = true;
+                if (current.isToday()) {
+                  showEvent = !event.isAllDay;
+                } else {
+                  showEvent = !event.isRecurringEvent;
+                }
+                console.log(allDays);
+
                 return (
                   <Fragment key={event.id}>
-                    <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"} />
-                    {(current.isToday() || !event.isRecurringEvent) && (
-                      <Event isNext={!inMeetingCurrently && isNext} {...event} />
-                    )}
+                    <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
+                      <div>{allDays}</div>
+                    </NowLine>
+                    {showEvent && <Event isNext={!inMeetingCurrently && isNext} {...event} />}
                     {current.isToday() &&
                       // @ts-ignore
                       now.isAfter(event.end) &&
-                      index === currentEvents.length - 1 && <NowLine />}
+                      index === currentEvents.length - 1 && <NowLine>{allDays}</NowLine>}
                   </Fragment>
                 );
               })}
