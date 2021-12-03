@@ -98,7 +98,11 @@ function Events({ events, className }: { className?: string; events: { [key: str
                     {current.isToday() &&
                       // @ts-ignore
                       now.isAfter(event.end) &&
-                      index === currentEvents.length - 1 && <NowLine>{allDays}</NowLine>}
+                      index === currentEvents.length - 1 && (
+                        <NowLine>
+                          <div>{allDays}</div>
+                        </NowLine>
+                      )}
                   </Fragment>
                 );
               })}
