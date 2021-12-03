@@ -177,7 +177,7 @@ class Google {
           // all day event
           let start = dayjs(event.start.date).startOf("day");
           const end = dayjs(event.end.date).endOf("day");
-          const diff = end.diff(start, "day");
+          const diff = end.diff(start, "day") + 1;
           event.isAllDay = true;
           if (diff > 0) {
             for (let i = 1; i < diff; i += 1) {

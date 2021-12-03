@@ -60,7 +60,7 @@ export default function Event({
     if (href.startsWith("https://zoom.us/j/")) {
       href = href.replace("https://zoom.us/j/", "zoommtg://zoom.us/join?confno=");
     } else if (href.startsWith("https://meet.google.com")) {
-      href += `?authuser=${user.email}`;
+      href += `?authuser=${user?.email}`;
     }
   }
   return (
