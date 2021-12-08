@@ -21,7 +21,7 @@ export default function Event({
   isNext = false,
   style,
   className,
-  rule,
+  hint,
 }: IEvent & {
   style?: CSSProperties;
   className?: string;
@@ -93,7 +93,7 @@ export default function Event({
               {start.format(intervalFormat[0])} – {/* @ts-ignore */}
               {end.format(intervalFormat[1])}
               {isRecurringEvent && (
-                <Tooltip title={rule && rule.toText()}>
+                <Tooltip title={hint}>
                   <RecurringIcon />
                 </Tooltip>
               )}

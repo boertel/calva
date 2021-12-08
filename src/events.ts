@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import dayjs from "@/dayjs";
-import { rrulestr } from "rrule";
 
 interface Attendee {
   email: string;
@@ -14,6 +13,7 @@ export interface IEvent {
     url?: string;
   };
   isOff?: boolean;
+  hint?: string;
   isRecurringEvent: boolean;
   recurringEventId: string;
   recurrence?: string[];

@@ -151,25 +151,27 @@ class Google {
         let event = parseEvent(item);
         if (recurrence) {
           // recurring events
-          // FIXME deal with EXDATE and rrule.js
-          const dtstart = `DTSTART:${dayjs(
-            `${dayjs(event.start.date).format("YYYY-MM-DD")}T${event.start.time}:00`
-          ).format("YYYYMMDD[T]HHmm00[Z]")}`;
-          const recurring = rrulestr(
-            [dtstart].concat(recurrence.filter((str: string) => !str.startsWith("EXDATE"))).join("\n")
-          );
+          const recurring = getRRule(recurrence, event.start);
           if (!recurring.options.until || dayjs().isBefore(recurring.options.until)) {
             recurring
               .between(dayjs().subtract(2, "days").toDate(), dayjs().add(44, "days").toDate())
               .forEach((date) => {
                 // @ts-ignore
-                const generatedStart = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.start.time });
+                const generatedStart = dayjs.parts({
+                  date: dayjs(date).format("YYYY-MM-DD"),
+                  time: event.start.time || "00:00:00",
+                });
                 // @ts-ignore
-                const generatedEnd = dayjs.parts({ date: dayjs(date).format("YYYY-MM-DD"), time: event.end.time });
+                const generatedEnd = dayjs.parts({
+                  date: dayjs(date).format("YYYY-MM-DD"),
+                  time: event.end.time || "23:59:00",
+                });
                 events.push({
                   ...event,
                   start: generatedStart,
+                  isAllDay: !event.start.time,
                   end: generatedEnd,
+                  hint: recurring.toText(),
                 });
               });
           }
@@ -215,24 +217,32 @@ class Google {
   }
 }
 
-function set(events: { [key: string]: IEvent[] }, event: IEvent, start?: any, end?: any): { [key: string]: IEvent[] } {
-  const _start = start || event.start;
-  const _end = end || event.end;
-
-  if (!_start) {
-    return events;
-  }
-  const key = start.format("YYYY-MM-DD");
-
-  let eventsOfTheDay = events[key] || [];
-  eventsOfTheDay.push({
-    ...event,
-    start: _start,
-    end: _end,
-  });
-  events[key] = eventsOfTheDay;
-
-  return events;
+function getRRule(recurrence, start) {
+  const dtstart = `DTSTART:${dayjs(`${dayjs(start.date).format("YYYY-MM-DD")}T${start.time || "00:00"}:00`).format(
+    "YYYYMMDD[T]HHmm00[Z]"
+  )}`;
+  // FIXME deal with EXDATE and rrule.js
+  return rrulestr(
+    [dtstart]
+      .concat(
+        recurrence
+          .filter((str: string) => !str.startsWith("EXDATE"))
+          .map((str) => {
+            return str
+              .split(";")
+              .map((part) => {
+                if (part.startsWith("UNTIL=") && !start.time) {
+                  const until = dayjs(part, "YYYYMMDD").endOf("day").format("YYYYMMDD[T]HHmm59[Z]");
+                  return `UNTIL=${until}`;
+                } else {
+                  return part;
+                }
+              })
+              .join(";");
+          })
+      )
+      .join("\n")
+  );
 }
 
 function parseEvent(

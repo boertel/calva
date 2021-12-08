@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3024",
+    "dev": "TZ=utc next dev -p 3024",
     "build": "next build",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "lint": "next lint",

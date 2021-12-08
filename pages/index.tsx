@@ -51,7 +51,9 @@ function Events({ events, className }: { className?: string; events: { [key: str
           // @ts-ignore
           const currentEvents = events[key]?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
-          const hasRecurringMeetings = !!currentEvents.find(({ isRecurringEvent }) => isRecurringEvent);
+          const hasRecurringMeetings = !!currentEvents.find(
+            ({ isRecurringEvent, isAllDay }) => isRecurringEvent && !isAllDay
+          );
 
           let inMeetingCurrently = false;
 
@@ -86,7 +88,7 @@ function Events({ events, className }: { className?: string; events: { [key: str
                 if (current.isToday()) {
                   showEvent = !event.isAllDay;
                 } else {
-                  showEvent = !event.isRecurringEvent;
+                  showEvent = !event.isRecurringEvent || !!event.isAllDay;
                 }
 
                 return (
