@@ -13,7 +13,7 @@ export default function Settings() {
           </h3>
         </section>
         <section>
-          <form action="/api/auth/logout" method="post">
+          <form action="/api/auth/signout" method="post">
             <button
               type="submit"
               className="px-4 py-2 rounded-md border border-white bg-white bg-opacity-0 hover:bg-opacity-20"

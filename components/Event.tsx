@@ -93,7 +93,7 @@ export default function Event({
               {start.format(intervalFormat[0])} – {/* @ts-ignore */}
               {end.format(intervalFormat[1])}
               {isRecurringEvent && (
-                <Tooltip title={hint}>
+                <Tooltip>
                   <RecurringIcon />
                 </Tooltip>
               )}
@@ -109,7 +109,9 @@ export default function Event({
           </h4>
         )}
         <div className={cn("flex items-center justify-between flex-grow", { "pr-4": !isToday })}>
-          <h4 className={cn({ "w-full text-right": isAllDay })}>{summary.replace("<>", "↔️")}</h4>
+          <h4 className={cn({ "w-full text-right": isAllDay })} title={hint}>
+            {summary.replace("<>", "↔️")}
+          </h4>
           {isExternal && (
             <Tooltip title="⚠️  meeting with people outside of your organization">
               <ExternalIcon size="1.2em" className="text-gray-500" />
