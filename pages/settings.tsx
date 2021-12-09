@@ -1,3 +1,4 @@
+import { signOut } from "next-auth/react";
 import UserMenu from "components/UserMenu";
 import { useUser } from "@/hooks";
 
@@ -13,14 +14,12 @@ export default function Settings() {
           </h3>
         </section>
         <section>
-          <form action="/api/auth/signout" method="post">
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md border border-white bg-white bg-opacity-0 hover:bg-opacity-20"
-            >
-              Log out
-            </button>
-          </form>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="px-4 py-2 rounded-md border border-white bg-white bg-opacity-0 hover:bg-opacity-20"
+          >
+            Log out
+          </button>
         </section>
       </main>
       <UserMenu href="/" />

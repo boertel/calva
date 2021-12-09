@@ -1,3 +1,4 @@
+import { google as googleapis } from "googleapis";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -33,6 +34,25 @@ export default NextAuth({
         session.user.id = user.id;
       }
       return Promise.resolve(session);
+    },
+  },
+  events: {
+    signIn: async ({ account, isNewUser }) => {
+      if (!isNewUser) {
+        const { access_token, refresh_token } = account;
+        const auth = new googleapis.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
+        auth.setCredentials({ access_token, refresh_token });
+        const { token } = await auth.getAccessToken();
+        await db.account.update({
+          where: {
+            provider_providerAccountId: {
+              provider: "google",
+              providerAccountId: account.providerAccountId,
+            },
+          },
+          data: { access_token: token },
+        });
+      }
     },
   },
 });
