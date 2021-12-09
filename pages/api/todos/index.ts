@@ -2,11 +2,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { except } from "@/middlewares";
 import { getSession } from "next-auth/react";
 
+import { UnauthorizedError } from "@/errors";
 import dayjs from "@/dayjs";
 import db from "@/db";
 
 export default except(async function todo(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({ req });
+  if (!session?.user) {
+    throw new UnauthorizedError();
+  }
   // @ts-ignore
   const userId: string = session.user.id;
 
