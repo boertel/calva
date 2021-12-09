@@ -42,7 +42,8 @@ export default NextAuth({
         const { access_token, refresh_token } = account;
         const auth = new googleapis.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
         auth.setCredentials({ access_token, refresh_token });
-        const { token } = await auth.getAccessToken();
+        const { credentials } = await auth.refreshAccessToken();
+        console.log(token, rest);
         await db.account.update({
           where: {
             provider_providerAccountId: {
@@ -50,7 +51,12 @@ export default NextAuth({
               providerAccountId: account.providerAccountId,
             },
           },
-          data: { access_token: token },
+          data: {
+            access_token: credentials.access_token,
+            refresh_token: credentials.refresh_token,
+            expires_at: credentials.expiry_date,
+            scope: credentials.scope,
+          },
         });
       }
     },
