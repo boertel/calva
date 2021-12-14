@@ -80,23 +80,25 @@ model Calendar {
   Event     Event[]
 
   watchId   String?
+  syncToken String?
 
   @@unique([ownerId, slug])
 }
 
 model Event {
   id          String   @id @default(cuid())
-  startDate   String
-  endDate     String
-  startTime   String
-  endTime     String
-  timezone    String
-  recurrence  String
+  start       String
+  end         String
+  timezone    String?
+  recurrence  String?
   status      String
   summary     String
-  description String
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  externalId  String?
   calendarId  String
   calendar    Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  @@unique([externalId, calendarId])
 }

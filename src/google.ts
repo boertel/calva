@@ -44,7 +44,7 @@ class Google {
   token: string;
   userId: string;
   accountId: string;
-  private calendar: any;
+  calendar: any;
 
   constructor(id: string, token: string, refresh_token: string, userId: string, accountId: string) {
     this.token = token;
@@ -136,14 +136,25 @@ class Google {
     return response.data;
   }
 
-  async getEvents(calendarId = "primary") {
-    const response = await this.calendar.events.list({
+  async getEvents(calendarId = "primary", args = {}) {
+    let params = {
       calendarId,
-      timeMin: dayjs().subtract(1, "day").startOf("day").toISOString(),
-      maxResults: 45,
+    };
+    if (Object.keys(args).length === 0) {
+      params = {
+        ...params,
+        timeMin: dayjs().subtract(1, "day").startOf("day").toISOString(),
+        maxResults: 45,
+      };
+    } else {
+      params = { ...params, ...args };
+    }
+
+    const response = await this.calendar.events.list({
+      ...params,
     });
 
-    const { nextPageToken, items } = response.data;
+    const { nextPageToken, items, nextSyncToken } = response.data;
     let events = [];
     items.forEach((item: any) => {
       const { recurrence, start } = item;
@@ -211,6 +222,7 @@ class Google {
     });
 
     return {
+      nextSyncToken,
       nextPageToken,
       events: events.sort(({ start: a }, { start: z }) => a - z),
     };
