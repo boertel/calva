@@ -43,7 +43,6 @@ export default NextAuth({
         const auth = new googleapis.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
         auth.setCredentials({ access_token, refresh_token });
         const { credentials } = await auth.refreshAccessToken();
-        console.log(token, rest);
         await db.account.update({
           where: {
             provider_providerAccountId: {
