@@ -1,7 +1,7 @@
-import { ReactNode, CSSProperties } from "react";
+import { useClock } from "@/hooks";
 import cn from "classnames";
 import { useRouter } from "next/router";
-import { useClock } from "@/hooks";
+import { CSSProperties, ReactNode } from "react";
 
 export function NowLine({
   style,

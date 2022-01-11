@@ -1,16 +1,35 @@
 // @ts-nocheck
-import { CSSProperties } from "react";
-import cn from "classnames";
-import Link from "next/link";
 import { IEvent } from "@/events";
+import { useClock, useEverySecond, useUser } from "@/hooks";
+import { ExternalIcon, RecurringIcon, WarningIcon } from "@/icons";
+import { ConferenceIcon } from "@/ui";
 // @ts-ignore
 import { duration } from "@boertel/duration";
-import { useEverySecond, useClock, useUser } from "@/hooks";
-import { WarningIcon, RecurringIcon, ExternalIcon } from "@/icons";
-import { ConferenceIcon } from "@/ui";
+import cn from "classnames";
 import { useSettings } from "components/Settings";
+import Link from "next/link";
+import { CSSProperties } from "react";
 
-export default function Event({
+export function OtherEvent({ end, start, isRecurringEvent, summary }) {
+  const { intervalFormat } = useSettings();
+  if (isRecurringEvent) {
+    return null;
+  }
+  return (
+    <div className="flex flex-row items-center">
+      <div title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])} className="flex items-center gap-2">
+        <h5 className="text-gray-500 tabular-nums">
+          {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
+        </h5>
+        <h4>
+          <Summary>{summary}</Summary>
+        </h4>
+      </div>
+    </div>
+  );
+}
+
+export function TodayEvent({
   end,
   start,
   summary,
@@ -69,16 +88,12 @@ export default function Event({
         target="_blank"
         rel="noopener"
         className={cn(
-          isToday
-            ? cn(
-                "cursor-pointer rounded-lg p-4 flex flex-col my-4 bg-opacity-0 transition-opacity hover:bg-opacity-20 space-y-2",
-                {
-                  "opacity-30 border border-purple-500 hover:opacity-80": isPast,
-                  "border-2 border-red-500 bg-red-500": isNow,
-                  "border border-dashed border-purple-500 bg-purple-500": isFuture,
-                }
-              )
-            : "flex flex-row items-center gap-2 w-full flex-wrap",
+          "cursor-pointer rounded-lg p-4 flex flex-col my-4 bg-opacity-0 transition-opacity hover:bg-opacity-20 space-y-2",
+          {
+            "opacity-30 border border-purple-500 hover:opacity-80": isPast,
+            "border-2 border-red-500 bg-red-500": isNow,
+            "border border-dashed border-purple-500 bg-purple-500": isFuture,
+          },
           className
         )}
         style={style}
@@ -87,7 +102,10 @@ export default function Event({
           <h4 className="flex justify-between items-center gap-2 flex-shrink-0">
             <div
               title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}
-              className={cn("flex items-center gap-2", { "text-red-500 font-medium": isNow, "text-gray-500": !isNow })}
+              className={cn("flex items-center gap-2 tabular-nums", {
+                "text-red-500 font-medium": isNow,
+                "text-gray-500": !isNow,
+              })}
             >
               {/* @ts-ignore */}
               {start.format(intervalFormat[0])} – {/* @ts-ignore */}
@@ -110,7 +128,7 @@ export default function Event({
         )}
         <div className={cn("flex items-center justify-between flex-grow", { "pr-4": !isToday })}>
           <h4 className={cn({ "w-full text-right": isAllDay })} title={hint}>
-            {summary.replace("<>", "↔️")}
+            <Summary>{summary}</Summary>
           </h4>
           {isExternal && (
             <Tooltip title="⚠️  meeting with people outside of your organization">
@@ -121,6 +139,10 @@ export default function Event({
       </a>
     </AsComponent>
   );
+}
+
+function Summary({ children }) {
+  return children.replace("<>", "↔️");
 }
 
 function WaitingPill({ start, end }: { start: typeof dayjs; end: typeof end }) {

@@ -1,7 +1,7 @@
-import { createGoogleFromReq } from "@/google";
 import dayjs from "@/dayjs";
-import Event from "components/Event";
+import { createGoogleFromReq } from "@/google";
 import { useNow } from "@/hooks";
+import { TodayEvent } from "components/Event";
 
 // @ts-ignore
 export async function getServerSideProps(context) {
@@ -36,7 +36,7 @@ export default function Join({ events = [], children }) {
           "No meetings happening now!"
         )}
       </h1>
-      <Event {...event} className="justify-center" start={start} end={end} isNext={true} />
+      <TodayEvent {...event} className="justify-center" start={start} end={end} isNext={true} />
       {children}
     </div>
   );
