@@ -100,9 +100,9 @@ function Events({ events, className }: { className?: string; events: { [key: str
           } else {
             return (
               <OtherDay key={key} current={current} isOff={isOff} className="items-center">
-                {hasRecurringMeetings && <RecurringIcon className="text-purple-500 mr-2" />}
-                <div className="flex flex-col">
-                  {currentEvents.map((event: IEvent, index: number) => {
+                {hasRecurringMeetings && <RecurringIcon className="text-purple-500 mr-2 flex-shrink-0" />}
+                <div className="flex flex-col min-w-0">
+                  {currentEvents.map((event: IEvent) => {
                     return <OtherEvent className="mx-4" key={event.id} {...event} />;
                   })}
                 </div>

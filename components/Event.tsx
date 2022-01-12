@@ -17,13 +17,14 @@ export function OtherEvent({ end, start, isRecurringEvent, summary }) {
   }
   return (
     <div className="flex flex-row items-center">
-      <div title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])} className="flex items-center gap-2">
+      <div
+        title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}
+        className="flex items-center gap-2 min-w-0"
+      >
         <h5 className="text-gray-500 tabular-nums">
           {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
         </h5>
-        <h4>
-          <Summary>{summary}</Summary>
-        </h4>
+        <Summary className="text-ellipsis overflow-hidden whitespace-nowrap">{summary}</Summary>
       </div>
     </div>
   );
@@ -132,7 +133,7 @@ export function TodayEvent({
           </h4>
           {isExternal && (
             <Tooltip title="⚠️  meeting with people outside of your organization">
-              <ExternalIcon size="1.2em" className="text-gray-500" />
+              <ExternalIcon size="1em" className="text-gray-500" />
             </Tooltip>
           )}
         </div>
@@ -141,8 +142,8 @@ export function TodayEvent({
   );
 }
 
-function Summary({ children }) {
-  return children.replace("<>", "↔️");
+function Summary({ children, ...props }) {
+  return <div {...props}>{children.replace("<>", "↔️")}</div>;
 }
 
 function WaitingPill({ start, end }: { start: typeof dayjs; end: typeof end }) {
