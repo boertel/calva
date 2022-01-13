@@ -1,19 +1,19 @@
-import { useState, ComponentPropsWithoutRef, useEffect, useCallback, useRef } from "react";
-import cn from "classnames";
 import dayjs from "@/dayjs";
 import {
-  EditIcon,
-  DoneIcon,
   DeleteIcon,
+  DoneIcon,
+  EditIcon,
+  HideIcon,
+  ShowIcon,
+  TodoCancelledIcon,
   TodoDelayedIcon,
   TodoDoneIcon,
   TodoTodoIcon,
-  TodoCancelledIcon,
-  HideIcon,
-  ShowIcon,
 } from "@/icons";
 import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
+import cn from "classnames";
+import { ComponentPropsWithoutRef, useCallback, useEffect, useRef, useState } from "react";
 
 function useEventListener(type: string, listener: (evt: any) => void) {
   useEffect(() => {
@@ -36,13 +36,20 @@ export function TodoList() {
 
   useEventListener(
     "keydown",
-    useCallback((evt: KeyboardEvent) => {
-      // @ts-ignore
-      if (evt.key === "i" && input.current && evt?.target?.tagName !== "INPUT") {
-        evt.preventDefault();
-        input.current.focus();
-      }
-    }, [])
+    useCallback(
+      (evt: KeyboardEvent) => {
+        // @ts-ignore
+        if (evt?.target?.tagName !== "INPUT") {
+          if (evt.key === "i" && input.current) {
+            evt.preventDefault();
+            input.current.focus();
+          } else if (evt.key === "h") {
+            setShowOnlyTodo((prev) => !prev);
+          }
+        }
+      },
+      [setShowOnlyTodo]
+    )
   );
 
   function onKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {

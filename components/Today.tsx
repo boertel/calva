@@ -1,7 +1,6 @@
 // @ts-nocheck
-import dayjs from "@/dayjs";
 import { LeftFrom, useBackToElement } from "@/hooks";
-import { Annotation, Pill } from "@/ui";
+import { Pill } from "@/ui";
 import cn from "classnames";
 
 import Day from "./Day";
@@ -14,18 +13,23 @@ export default function Today({ current, children, isOff }: DayProps) {
   const isWeekend = current.isWeekend();
 
   return (
-    <Day current={current} ref={ref} className="flex-col border-t-0">
-      <h3
-        className={cn(
-          "self-start sticky top-0 flex items-start z-10 px-4 flex-shrink-0 w-full text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black",
-          {
-            "text-white text-opacity-20": isWeekend || isOff,
-          }
-        )}
-      >
-        <div>{current.format("dddd")}</div>
-        <div>{current.format("D")}</div>
-      </h3>
+    <>
+      <Day current={current} ref={ref} className="flex-col border-t-0">
+        <h3
+          className={cn(
+            "self-start sticky top-0 flex items-start z-10 px-4 flex-shrink-0 w-full text-4xl font-black text-purple-500 space-x-2 pt-2 shadow-xl bg-black",
+            {
+              "text-white text-opacity-20": isWeekend || isOff,
+            }
+          )}
+        >
+          <div>{current.format("dddd")}</div>
+          <div>{current.format("D")}</div>
+        </h3>
+
+        <div className="relative h-full my-6 flex flex-col justify-between">{children}</div>
+        <TodoList />
+      </Day>
       <Pill
         onClick={backToElement}
         className={cn({
@@ -39,8 +43,6 @@ export default function Today({ current, children, isOff }: DayProps) {
       >
         Back to today
       </Pill>
-      <div className="relative h-full my-6 flex flex-col justify-between">{children}</div>
-      <TodoList />
-    </Day>
+    </>
   );
 }

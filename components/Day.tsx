@@ -21,7 +21,7 @@ const Day = forwardRef(function DayWithRef({ current, className, children, ...pr
       <li
         style={{ gridColumn: 2 }}
         className={cn(
-          "relative flex no-underline border-gray-800 bg-transparent transition-colors rounded-none",
+          "flex no-underline border-gray-800 bg-transparent transition-colors rounded-none",
           firstOfTheMonth ? "border-t-4 border-gray-600" : "border-t",
           className
         )}

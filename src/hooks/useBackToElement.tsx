@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 export enum LeftFrom {
   Top = "top",
@@ -6,9 +6,7 @@ export enum LeftFrom {
 }
 
 export function useBackToElement<T extends HTMLElement>() {
-  const [elementLeftFrom, setElementLeftFrom] = useState<
-    LeftFrom | undefined
-  >();
+  const [elementLeftFrom, setElementLeftFrom] = useState<LeftFrom | undefined>();
   const ref = useRef<T>();
   const observer = useRef<IntersectionObserver>();
 
