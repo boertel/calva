@@ -25,14 +25,12 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
   }
   return (
     <div className="flex flex-row items-center">
-      <div
-        title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}
-        className="flex items-center gap-2 min-w-0"
-      >
-        <h5 className="text-gray-500 tabular-nums">
+      <div className="flex items-center gap-2 min-w-0">
+        <h5 className="text-gray-500 tabular-nums" title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}>
           {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
         </h5>
         <Summary
+          title={summary}
           className={cn("text-ellipsis overflow-hidden whitespace-nowrap", {
             "line-through text-gray-500": responseStatus === "declined",
           })}
