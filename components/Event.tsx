@@ -13,6 +13,13 @@ import { CSSProperties } from "react";
 export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, ...rest }) {
   const responseStatus = attendees.find(({ self }) => self)?.responseStatus;
   const { intervalFormat } = useSettings();
+
+  const user = useUser();
+  const isExternal = attendees.find(({ email }) => {
+    const [, domain] = email.split("@");
+    return domain !== user?.email.split("@")[1];
+  });
+
   if (isRecurringEvent) {
     return null;
   }
@@ -32,6 +39,7 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
         >
           {summary}
         </Summary>
+        {isExternal && <ExternalIcon size="1em" className="text-gray-500" />}
       </div>
     </div>
   );

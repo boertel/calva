@@ -1,10 +1,10 @@
+// @ts-nocheck
 import dayjs from "@/dayjs";
 import db from "@/db";
 import { UnauthorizedError } from "@/errors";
 import cuid from "cuid";
 import getUrls from "get-urls";
 import { google as googleapis } from "googleapis";
-// @ts-nocheck
 import type { NextApiRequest } from "next";
 import { getSession } from "next-auth/react";
 import { rrulestr } from "rrule";
