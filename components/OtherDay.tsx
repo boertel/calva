@@ -1,9 +1,5 @@
 // @ts-nocheck
-import dayjs from "@/dayjs";
-import { LeftFrom, useBackToElement } from "@/hooks";
-import { Annotation } from "@/ui";
 import cn from "classnames";
-import { CSSProperties, ReactNode, forwardRef } from "react";
 
 import Day from "./Day";
 

@@ -10,7 +10,8 @@ import { useSettings } from "components/Settings";
 import Link from "next/link";
 import { CSSProperties } from "react";
 
-export function OtherEvent({ end, start, isRecurringEvent, summary }) {
+export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, ...rest }) {
+  const responseStatus = attendees.find(({ self }) => self)?.responseStatus;
   const { intervalFormat } = useSettings();
   if (isRecurringEvent) {
     return null;
@@ -24,7 +25,13 @@ export function OtherEvent({ end, start, isRecurringEvent, summary }) {
         <h5 className="text-gray-500 tabular-nums">
           {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
         </h5>
-        <Summary className="text-ellipsis overflow-hidden whitespace-nowrap">{summary}</Summary>
+        <Summary
+          className={cn("text-ellipsis overflow-hidden whitespace-nowrap", {
+            "line-through text-gray-500": responseStatus === "declined",
+          })}
+        >
+          {summary}
+        </Summary>
       </div>
     </div>
   );
@@ -112,7 +119,7 @@ export function TodayEvent({
               {start.format(intervalFormat[0])} – {/* @ts-ignore */}
               {end.format(intervalFormat[1])}
               {isRecurringEvent && (
-                <Tooltip>
+                <Tooltip title={hint}>
                   <RecurringIcon />
                 </Tooltip>
               )}

@@ -1,13 +1,12 @@
+import dayjs from "@/dayjs";
+import db from "@/db";
+import { UnauthorizedError } from "@/errors";
+import cuid from "cuid";
+import getUrls from "get-urls";
+import { google as googleapis } from "googleapis";
 // @ts-nocheck
 import type { NextApiRequest } from "next";
-import cuid from "cuid";
-import { google as googleapis } from "googleapis";
-import db from "@/db";
-import dayjs from "@/dayjs";
-import getUrls from "get-urls";
 import { getSession } from "next-auth/react";
-import { UnauthorizedError } from "@/errors";
-
 import { rrulestr } from "rrule";
 
 export async function createGoogleFromReq(req: NextApiRequest) {
@@ -339,8 +338,8 @@ function parseEvent(
     attendees:
       attendees
         ?.filter(({ resource }) => !resource)
-        .map(({ email }) => {
-          return { email };
+        .map(({ email, self, responseStatus }) => {
+          return { email, self, responseStatus };
         }) || [],
     start: {
       date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),

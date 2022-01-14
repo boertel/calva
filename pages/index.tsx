@@ -65,47 +65,47 @@ function Events({ events, className }: { className?: string; events: { [key: str
             return (
               <Today key={key} current={current} isOff={isOff}>
                 <div className="px-4">
-                  {currentEvents.map((event: IEvent, index: number) => {
-                    let isNext = now.isBetween(
-                      index > 0 ? currentEvents[index - 1]?.start : now.startOf("day"),
-                      event.start
-                    );
-                    if (event.start && event.end && !inMeetingCurrently) {
-                      inMeetingCurrently = event.start.isHappeningNowWith(event.end);
-                    }
+                  {currentEvents
+                    .filter(({ isAllDay }) => !isAllDay)
+                    .map((event: IEvent, index: number) => {
+                      let isNext = now.isBetween(
+                        index > 0 ? currentEvents[index - 1]?.start : now.startOf("day"),
+                        event.start
+                      );
+                      if (event.start && event.end && !inMeetingCurrently) {
+                        inMeetingCurrently = event.start.isHappeningNowWith(event.end);
+                      }
 
-                    let showEvent = true;
-                    if (current.isToday()) {
-                      showEvent = !event.isAllDay;
-                    } else {
-                      showEvent = !event.isRecurringEvent || !!event.isAllDay;
-                    }
-                    return (
-                      <Fragment key={event.id}>
-                        <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
-                          <div>{allDays}</div>
-                        </NowLine>
-                        <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
-                        {now.isAfter(event.end) && index === currentEvents.length - 1 && (
-                          <NowLine>
+                      return (
+                        <Fragment key={event.id}>
+                          <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
                             <div>{allDays}</div>
                           </NowLine>
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                          <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
+                          {now.isAfter(event.end) && index === currentEvents.length - 1 && (
+                            <NowLine>
+                              <div>{allDays}</div>
+                            </NowLine>
+                          )}
+                        </Fragment>
+                      );
+                    })}
                 </div>
               </Today>
             );
           } else {
             return (
-              <OtherDay key={key} current={current} isOff={isOff} className="items-center">
+              <OtherDay key={key} current={current} isOff={isOff} className="items-center pr-4">
                 {hasRecurringMeetings && <RecurringIcon className="text-purple-500 mr-2 flex-shrink-0" />}
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col min-w-0 flex-grow">
                   {currentEvents.map((event: IEvent) => {
-                    return <OtherEvent className="mx-4" key={event.id} {...event} />;
+                    if (!event.isAllDay) {
+                      return <OtherEvent className="mx-4" key={event.id} {...event} />;
+                    }
+                    return null;
                   })}
                 </div>
+                <div className="ml-2">{allDays.join(" ")}</div>
               </OtherDay>
             );
           }
