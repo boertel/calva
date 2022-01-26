@@ -25,7 +25,7 @@ export function NowLine({
       >
         <div id="now" className="relative bg-red-500 bg-opacity-80 w-full h-[2px]" />
         <div className="flex gap-2 ml-2">
-          {children}
+          <div>{children}</div>
           {/* @ts-ignore */}
           {now?.format(query.format === "24h" ? "HH:mm" : "hh:mma")}
         </div>

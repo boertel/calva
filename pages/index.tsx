@@ -65,6 +65,7 @@ function Events({ events, className }: { className?: string; events: { [key: str
             return (
               <Today key={key} current={current} isOff={isOff}>
                 <div className="px-4">
+                  {currentEvents.length === 0 && <NowLine />}
                   {currentEvents
                     .filter(({ isAllDay }) => !isAllDay)
                     .map((event: IEvent, index: number) => {
@@ -79,14 +80,10 @@ function Events({ events, className }: { className?: string; events: { [key: str
                       return (
                         <Fragment key={event.id}>
                           <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
-                            <div>{allDays}</div>
+                            {allDays}
                           </NowLine>
                           <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
-                          {now.isAfter(event.end) && index === currentEvents.length - 1 && (
-                            <NowLine>
-                              <div>{allDays}</div>
-                            </NowLine>
-                          )}
+                          {now.isAfter(event.end) && index === currentEvents.length - 1 && <NowLine>{allDays}</NowLine>}
                         </Fragment>
                       );
                     })}
