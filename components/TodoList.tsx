@@ -1,4 +1,5 @@
 import dayjs from "@/dayjs";
+import { useEventListener } from "@/hooks";
 import {
   DeleteIcon,
   DoneIcon,
@@ -14,13 +15,6 @@ import type { Todo, TodoStatus } from "@/todos";
 import { useTodos } from "@/todos";
 import cn from "classnames";
 import { ComponentPropsWithoutRef, useCallback, useEffect, useRef, useState } from "react";
-
-function useEventListener(type: string, listener: (evt: any) => void) {
-  useEffect(() => {
-    window.addEventListener(type, listener);
-    return () => window.removeEventListener(type, listener);
-  }, [type, listener]);
-}
 
 function choice<T>(choices: T[]): T {
   const index = Math.floor(Math.random() * choices.length);

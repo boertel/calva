@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useMemo, createContext, useContext, ReactNode } from "react";
+import { ReactNode, createContext, useContext, useMemo } from "react";
 
 const SettingsContext = createContext({});
 

@@ -1,21 +1,52 @@
+import { useEventListener } from "@/hooks";
 // @ts-nocheck
 import { Annotation } from "@/ui";
 import cn from "classnames";
-import { forwardRef } from "react";
+import { forwardRef, useCallback, useState } from "react";
 
 const Day = forwardRef(function DayWithRef({ current, className, children, ...props }, ref) {
   const firstOfTheMonth = current.date() === 1;
+  const [showWeekNumber, setShowWeekNumber] = useState<boolean>(false);
+
+  useEventListener(
+    "keydown",
+    useCallback(
+      (evt) => {
+        if (evt.target.tagName !== "INPUT" && evt.key === "w") {
+          setShowWeekNumber((prev) => !prev);
+        }
+      },
+      [setShowWeekNumber]
+    )
+  );
 
   return (
     <>
-      {(current.date() === 1 || current.isToday()) && (
-        <Annotation
-          style={{ gridColumn: 1 }}
-          className={cn("justify-end z-20", {
-            "text-purple-500": current.isThisMonth(),
-          })}
-        >
-          {current.format("MMM")}
+      {(current.date() === 1 || current.isToday() || current.isoWeekday() === 1) && (
+        <Annotation style={{ gridColumn: 1 }} className={cn("z-20")}>
+          <div
+            className={cn("flex flex-col items-center h-full", current.isToday() ? "justify-start" : "justify-center")}
+          >
+            {(current.date() === 1 || current.isToday()) && (
+              <div
+                className={cn({
+                  "text-purple-500": current.isThisMonth(),
+                })}
+              >
+                {current.format("MMM")}
+              </div>
+            )}
+            {current.isoWeekday() === 1 && (
+              <div
+                className={cn("text-sm transition-opacity self-end", {
+                  "opacity-40": showWeekNumber,
+                  "opacity-0": !showWeekNumber,
+                })}
+              >
+                {current.isoWeek()}
+              </div>
+            )}
+          </div>
         </Annotation>
       )}
       <li
