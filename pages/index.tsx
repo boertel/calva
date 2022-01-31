@@ -97,7 +97,7 @@ function Events({ events, className }: { className?: string; events: { [key: str
                   <div className="relative text-purple-500 mr-2 flex-shrink-0">
                     <RecurringIcon size="1.2em" />
                     {numberOfRecurringMeetings > 1 && (
-                      <div className="absolute inset-0 text-tiny flex items-center justify-center">
+                      <div className="absolute inset-0 top-[-1px] left-[1px] text-tiny flex items-center justify-center">
                         {numberOfRecurringMeetings}
                       </div>
                     )}
