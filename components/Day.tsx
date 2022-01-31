@@ -1,5 +1,5 @@
-import { useEventListener } from "@/hooks";
 // @ts-nocheck
+import { useEventListener } from "@/hooks";
 import { Annotation } from "@/ui";
 import cn from "classnames";
 import { forwardRef, useCallback, useState } from "react";
