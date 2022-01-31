@@ -7,6 +7,9 @@ module.exports = {
       gray: "rgba(113, 113, 122, 0.8)",
     },
     extend: {
+      fontSize: {
+        tiny: ".4rem",
+      },
       gridTemplateColumns: {
         events: "max-content minmax(300px, 65ch) max-content",
       },

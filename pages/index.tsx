@@ -52,9 +52,9 @@ function Events({ events, className }: { className?: string; events: { [key: str
           // @ts-ignore
           const currentEvents = events[key]?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
-          const hasRecurringMeetings = !!currentEvents.find(
+          const numberOfRecurringMeetings = currentEvents.filter(
             ({ isRecurringEvent, isAllDay }) => isRecurringEvent && !isAllDay
-          );
+          ).length;
 
           let inMeetingCurrently = false;
 
@@ -93,7 +93,16 @@ function Events({ events, className }: { className?: string; events: { [key: str
           } else {
             return (
               <OtherDay key={key} current={current} isOff={isOff} className="items-center pr-4">
-                {hasRecurringMeetings && <RecurringIcon className="text-purple-500 mr-2 flex-shrink-0" />}
+                {numberOfRecurringMeetings > 0 && (
+                  <div className="relative text-purple-500 mr-2 flex-shrink-0">
+                    <RecurringIcon size="1.2em" />
+                    {numberOfRecurringMeetings > 1 && (
+                      <div className="absolute inset-0 text-tiny flex items-center justify-center">
+                        {numberOfRecurringMeetings}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex flex-col min-w-0 flex-grow">
                   {currentEvents.map((event: IEvent) => {
                     if (!event.isAllDay) {

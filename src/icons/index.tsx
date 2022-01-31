@@ -6,7 +6,7 @@ export { default as GoogleLogo } from "./GoogleLogo";
 export * from "./ExternalIcon";
 export * from "./HideIcon";
 
-import { AlertCircle, CheckCircle, Repeat, ChevronRight, Circle, Edit, X, Trash } from "react-feather";
+import { AlertCircle, CheckCircle, ChevronRight, Circle, Edit, Repeat, Trash, X } from "react-feather";
 
 const size = (WrappedComponent: React.FunctionComponent) => {
   return function SizeIcon(props: React.SVGProps<SVGSVGElement>) {
