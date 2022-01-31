@@ -1,5 +1,3 @@
-const colors = require("tailwindcss/colors");
-
 module.exports = {
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class", // or 'media' or 'class'
@@ -9,7 +7,6 @@ module.exports = {
       gray: "rgba(113, 113, 122, 0.8)",
     },
     extend: {
-      colors: colors,
       gridTemplateColumns: {
         events: "max-content minmax(300px, 65ch) max-content",
       },
