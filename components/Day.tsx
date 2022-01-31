@@ -38,7 +38,7 @@ const Day = forwardRef(function DayWithRef({ current, className, children, ...pr
             )}
             {current.isoWeekday() === 1 && (
               <div
-                className={cn("text-sm transition-opacity self-end", {
+                className={cn("text-sm font-light transition-opacity self-end", {
                   "opacity-40": showWeekNumber,
                   "opacity-0": !showWeekNumber,
                 })}
