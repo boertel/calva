@@ -25,7 +25,11 @@ const Day = forwardRef(function DayWithRef({ current, className, children, ...pr
       {(current.date() === 1 || current.isToday() || current.isoWeekday() === 1) && (
         <Annotation style={{ gridColumn: 1 }} className={cn("z-20")}>
           <div
-            className={cn("flex flex-col items-center h-full", current.isToday() ? "justify-start" : "justify-center")}
+            className={cn(
+              "flex flex-col items-center h-full",
+              current.isToday() ? "justify-start" : "justify-center",
+              (current.date() === 1 || current.isToday()) && "bg-black pb-4"
+            )}
           >
             {(current.date() === 1 || current.isToday()) && (
               <div
