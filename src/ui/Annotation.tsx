@@ -11,7 +11,10 @@ export function Annotation({
   style?: CSSProperties;
 }) {
   return (
-    <li style={style} className={cn("top-0 text-4xl px-6 py-2 font-black sticky hidden md:flow-root", className)}>
+    <li
+      style={style}
+      className={cn("top-0 text-4xl px-6 pt-2 pb-4 font-black sticky bg-black hidden md:flow-root", className)}
+    >
       {children}
     </li>
   );
