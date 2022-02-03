@@ -18,7 +18,7 @@ export function NowLine({
     <>
       <div
         className={cn(
-          "w-full flex items-center text-red-500 transition-opacity text-opacity-80 hover:text-opacity-100 cursor-pointer",
+          "w-full flex items-center text-red-500 transition-opacity text-opacity-80 hover:text-opacity-100 cursor-pointer pl-4 md:pl-0",
           className
         )}
         style={style}
