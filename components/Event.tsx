@@ -25,19 +25,19 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
   }
   return (
     <div className="flex flex-row items-center">
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center gap-2 min-w-0 w-full">
         <h5 className="text-gray-500 tabular-nums" title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}>
           {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
         </h5>
         <Summary
           title={summary}
-          className={cn("text-ellipsis overflow-hidden whitespace-nowrap", {
+          className={cn("text-ellipsis overflow-hidden whitespace-nowrap flex-grow", {
             "line-through text-gray-500": responseStatus === "declined",
           })}
         >
           {summary}
         </Summary>
-        {isExternal && <ExternalIcon size="1em" className="text-gray-500" />}
+        {isExternal && <ExternalIcon size="1em" className="flex-shrink-0 text-gray-500" />}
       </div>
     </div>
   );
