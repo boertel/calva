@@ -146,7 +146,7 @@ export function TodayEvent({
           </h4>
           {isExternal && (
             <Tooltip title="⚠️  meeting with people outside of your organization">
-              <ExternalIcon size="1em" className="text-gray-500" />
+              <ExternalIcon size="1.2em" className="text-gray-500" />
             </Tooltip>
           )}
         </div>
