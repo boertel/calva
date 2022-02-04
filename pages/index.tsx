@@ -65,7 +65,7 @@ function Events({ events, className }: { className?: string; events: { [key: str
             return (
               <CurrentDay
                 key={key}
-                events={currentEvents}
+                events={currentEvents.filter(({ isAllDay }) => !isAllDay)}
                 current={current}
                 isOff={isOff}
                 now={now}
@@ -136,24 +136,20 @@ function CurrentDay({ events, isOff, current, now, allDays }) {
     <Today current={current} isOff={isOff}>
       <div className="px-4">
         {events.length === 0 && <NowLine />}
-        {events
-          .filter(({ isAllDay }) => !isAllDay)
-          .map((event: IEvent, index: number) => {
-            let isNext = now.isBetween(index > 0 ? events[index - 1]?.start : now.startOf("day"), event.start);
-            if (event.start && event.end && !inMeetingCurrently) {
-              inMeetingCurrently = event.start.isHappeningNowWith(event.end);
-            }
+        {events.map((event: IEvent, index: number) => {
+          let isNext = now.isBetween(index > 0 ? events[index - 1]?.start : now.startOf("day"), event.start);
+          if (event.start && event.end && !inMeetingCurrently) {
+            inMeetingCurrently = event.start.isHappeningNowWith(event.end);
+          }
 
-            return (
-              <Fragment key={event.id}>
-                <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
-                  {allDays}
-                </NowLine>
-                <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
-                {now.isAfter(event.end) && index === events.length - 1 && <NowLine>{allDays}</NowLine>}
-              </Fragment>
-            );
-          })}
+          return (
+            <Fragment key={event.id}>
+              <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>{allDays}</NowLine>
+              <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
+              {now.isAfter(event.end) && index === events.length - 1 && <NowLine>{allDays}</NowLine>}
+            </Fragment>
+          );
+        })}
       </div>
     </Today>
   );
