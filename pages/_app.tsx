@@ -1,13 +1,17 @@
-import { ReactNode } from "react";
-import { SWRConfig } from "swr";
-import Head from "next/head";
-import type { AppProps } from "next/app";
-import { AuthProvider, useAuthStatus, AuthStatus } from "../AuthStatus";
-import { SettingsProvider } from "components/Settings";
-import { ClockProvider } from "@/hooks";
-import { SessionProvider } from "next-auth/react";
+import "@boertel/cmdk/dist/cmdk.cjs.development.css";
 
 import "../styles/globals.css";
+
+import { ClockProvider } from "@/hooks";
+import { CommandProvider } from "components/Command";
+import { SettingsProvider } from "components/Settings";
+import { SessionProvider } from "next-auth/react";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { ReactNode } from "react";
+import { SWRConfig } from "swr";
+
+import { AuthProvider, AuthStatus, useAuthStatus } from "../AuthStatus";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
@@ -20,7 +24,9 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
           <SWRWithAuth>
             <SettingsProvider>
               <ClockProvider>
-                <Component {...pageProps} />
+                <CommandProvider>
+                  <Component {...pageProps} />
+                </CommandProvider>
               </ClockProvider>
             </SettingsProvider>
           </SWRWithAuth>

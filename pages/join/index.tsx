@@ -1,6 +1,7 @@
 import dayjs from "@/dayjs";
 import { createGoogleFromReq } from "@/google";
 import { useNow } from "@/hooks";
+import { Link } from "@/ui";
 import { TodayEvent } from "components/Event";
 
 // @ts-ignore
@@ -22,7 +23,6 @@ export default function Join({ events = [], children }) {
   // @ts-ignore
   const end = dayjs.parts(event.end);
 
-  // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
 
   return (
@@ -38,6 +38,10 @@ export default function Join({ events = [], children }) {
       </h1>
       <TodayEvent {...event} className="justify-center" start={start} end={end} isNext={true} />
       {children}
+
+      <Link className="text-center m-10" href="/">
+        Go back home
+      </Link>
     </div>
   );
 }

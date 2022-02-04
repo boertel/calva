@@ -34,6 +34,7 @@ declare module "dayjs" {
     isPast(): boolean;
     isFuture(): boolean;
     isThisWeek(): boolean;
+    formatInterval(): string;
   }
 
   export function parts({ date, time }: { date: string; time: string }): Dayjs;

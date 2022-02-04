@@ -1,8 +1,9 @@
-import { createGoogleFromReq } from "@/google";
 import dayjs from "@/dayjs";
+import { createGoogleFromReq } from "@/google";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 import useInterval from "use-interval";
+
 import Join from "./index";
 
 // @ts-ignore
@@ -21,7 +22,6 @@ export default function JoinNow({ events = [] }) {
   // @ts-ignore
   const end = dayjs.parts(event.end);
 
-  // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
 
   const { conference } = event;

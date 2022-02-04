@@ -92,7 +92,7 @@ class Google {
 
     return {
       nextPageToken,
-      events: items.map(parseEvent),
+      events: items.map(parseEvent).filter(({ isAllDay }) => !isAllDay),
     };
   }
 
@@ -166,12 +166,10 @@ class Google {
             recurring
               .between(dayjs().subtract(2, "days").toDate(), dayjs().add(44, "days").toDate())
               .forEach((date) => {
-                // @ts-ignore
                 const generatedStart = dayjs.parts({
                   date: dayjs(date).format("YYYY-MM-DD"),
                   time: event.start.time || "00:00:00",
                 });
-                // @ts-ignore
                 const generatedEnd = dayjs.parts({
                   date: dayjs(date).format("YYYY-MM-DD"),
                   time: event.end.time || "23:59:00",
@@ -211,9 +209,7 @@ class Google {
           // regular event
           events.push({
             ...event,
-            // @ts-ignore
             start: dayjs.parts(event.start),
-            // @ts-ignore
             end: dayjs.parts(event.end),
           });
         }
@@ -332,14 +328,15 @@ function parseEvent(
     status,
     urls,
     conference,
-    recurringEventId,
+    recurringEventId: recurringEventId || null,
     isRecurringEvent: !!recurrence || !!recurringEventId,
+    isAllDay: !start.dateTime,
     recurrence: recurrence || null,
     attendees:
       attendees
         ?.filter(({ resource }) => !resource)
         .map(({ email, self, responseStatus }) => {
-          return { email, self, responseStatus };
+          return { email, self: self || null, responseStatus };
         }) || [],
     start: {
       date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),

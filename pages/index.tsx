@@ -4,12 +4,14 @@ import { useClock } from "@/hooks";
 import { RecurringIcon } from "@/icons";
 import { NowLine } from "@/ui";
 import cn from "classnames";
+import { useCommand } from "components/Command";
 import { OtherEvent, TodayEvent } from "components/Event";
 import LoggedOutFooter from "components/LoggedOutFooter";
 import OtherDay from "components/OtherDay";
 import Today from "components/Today";
 import UserMenu from "components/UserMenu";
-import { Fragment } from "react";
+import { useRouter } from "next/router";
+import { Fragment, useEffect } from "react";
 
 import { AuthStatus, useAuthStatus } from "../AuthStatus";
 
@@ -56,39 +58,19 @@ function Events({ events, className }: { className?: string; events: { [key: str
             ({ isRecurringEvent, isAllDay }) => isRecurringEvent && !isAllDay
           ).length;
 
-          let inMeetingCurrently = false;
-
           const allDays: string[] = currentEvents.filter(({ isAllDay }) => isAllDay).map(({ summary }) => summary);
 
           const isOff = !!currentEvents.find(({ isOff }) => isOff);
           if (current.isToday()) {
             return (
-              <Today key={key} current={current} isOff={isOff}>
-                <div className="px-4">
-                  {currentEvents.length === 0 && <NowLine />}
-                  {currentEvents
-                    .filter(({ isAllDay }) => !isAllDay)
-                    .map((event: IEvent, index: number) => {
-                      let isNext = now.isBetween(
-                        index > 0 ? currentEvents[index - 1]?.start : now.startOf("day"),
-                        event.start
-                      );
-                      if (event.start && event.end && !inMeetingCurrently) {
-                        inMeetingCurrently = event.start.isHappeningNowWith(event.end);
-                      }
-
-                      return (
-                        <Fragment key={event.id}>
-                          <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
-                            {allDays}
-                          </NowLine>
-                          <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
-                          {now.isAfter(event.end) && index === currentEvents.length - 1 && <NowLine>{allDays}</NowLine>}
-                        </Fragment>
-                      );
-                    })}
-                </div>
-              </Today>
+              <CurrentDay
+                key={key}
+                events={currentEvents}
+                current={current}
+                isOff={isOff}
+                now={now}
+                allDays={allDays}
+              />
             );
           } else {
             return (
@@ -119,5 +101,60 @@ function Events({ events, className }: { className?: string; events: { [key: str
       </ul>
       <UserMenu href="/settings" />
     </>
+  );
+}
+
+function CurrentDay({ events, isOff, current, now, allDays }) {
+  const router = useRouter();
+
+  useCommand(
+    "I'm busy from ...",
+    () => {
+      if (events.length > 0) {
+        const formatter = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
+        const intervals = events
+          .filter(({ isAllDay }) => !isAllDay)
+          .map(({ start, end }) => `${start.formatInterval()}-${end.formatInterval()}`);
+        const sentence = `I'm busy from ${formatter.format(intervals)}`;
+        navigator.clipboard.writeText(sentence);
+      }
+    },
+    [events]
+  );
+
+  useCommand(
+    "Join next meeting",
+    () => {
+      router.push("/join/now");
+    },
+    [router]
+  );
+
+  let inMeetingCurrently = false;
+
+  return (
+    <Today current={current} isOff={isOff}>
+      <div className="px-4">
+        {events.length === 0 && <NowLine />}
+        {events
+          .filter(({ isAllDay }) => !isAllDay)
+          .map((event: IEvent, index: number) => {
+            let isNext = now.isBetween(index > 0 ? events[index - 1]?.start : now.startOf("day"), event.start);
+            if (event.start && event.end && !inMeetingCurrently) {
+              inMeetingCurrently = event.start.isHappeningNowWith(event.end);
+            }
+
+            return (
+              <Fragment key={event.id}>
+                <NowLine className={inMeetingCurrently ? "invisible" : isNext ? "visible" : "hidden"}>
+                  {allDays}
+                </NowLine>
+                <TodayEvent isNext={!inMeetingCurrently && isNext} {...event} />
+                {now.isAfter(event.end) && index === events.length - 1 && <NowLine>{allDays}</NowLine>}
+              </Fragment>
+            );
+          })}
+      </div>
+    </Today>
   );
 }

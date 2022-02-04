@@ -72,15 +72,9 @@ export function TodayEvent({
   const user = useUser();
   const { intervalFormat } = useSettings();
 
-  // @ts-ignore
   const isNow = start.isHappeningNowWith(end);
-  // @ts-ignore
   const isPast = end.isPast();
-  // @ts-ignore
   const isFuture = start.isFuture();
-
-  // @ts-ignore
-  const isToday = start ? start.isToday() : false;
 
   const isExternal = attendees.find(({ email }) => {
     const [, domain] = email.split("@");
@@ -135,12 +129,12 @@ export function TodayEvent({
               {!!conference ? (
                 <ConferenceIcon className={cn("filter", { grayscale: !isNow })} service={conference.type} />
               ) : (
-                isToday && <WarningIcon size="1.2em" className={isNow || isNext ? "text-red-500" : "text-gray-500"} />
+                <WarningIcon size="1.2em" className={isNow || isNext ? "text-red-500" : "text-gray-500"} />
               )}
             </div>
           </h4>
         )}
-        <div className={cn("flex items-center justify-between flex-grow", { "pr-4": !isToday })}>
+        <div className="flex items-center justify-between flex-grow">
           <h4 className={cn({ "w-full text-right": isAllDay })} title={hint}>
             <Summary>{summary}</Summary>
           </h4>
