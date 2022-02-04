@@ -84,4 +84,14 @@ dayjs.extend(function isThisWeek(o, c, d) {
   };
 });
 
+dayjs.extend(function formatInterval(o, c, d) {
+  c.prototype.formatInterval = function (hourFormat = "h"): string {
+    if (this.get("minutes")) {
+      return this.format(`${hourFormat}:mm`);
+    } else {
+      return this.format(`${hourFormat}`);
+    }
+  };
+});
+
 export default dayjs;

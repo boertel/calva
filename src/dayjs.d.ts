@@ -12,5 +12,6 @@ declare module "dayjs" {
     isPast(): boolean;
     isFuture(): boolean;
     isThisWeek(): boolean;
+    formatInterval(): string;
   }
 }
