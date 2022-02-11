@@ -15,10 +15,14 @@ export function CommandProvider({ children, ...props }) {
       });
     }
     options.current.push({ name, callback });
+
+    console.log("add", options.current);
   }, []);
 
   const removeCommand = useCallback((name) => {
-    options.current.filter((command) => command.name !== name);
+    options.current = options.current.filter((command) => {
+      return command.name !== name;
+    });
   }, []);
 
   const context = useMemo(() => {

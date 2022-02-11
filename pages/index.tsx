@@ -11,7 +11,7 @@ import OtherDay from "components/OtherDay";
 import Today from "components/Today";
 import UserMenu from "components/UserMenu";
 import { useRouter } from "next/router";
-import { Fragment, useEffect } from "react";
+import { Fragment, useCallback } from "react";
 
 import { AuthStatus, useAuthStatus } from "../AuthStatus";
 
@@ -109,17 +109,18 @@ function CurrentDay({ events, isOff, current, now, allDays }) {
 
   useCommand(
     "I'm busy from ...",
-    () => {
+    useCallback(() => {
+      console.log(events.length);
       if (events.length > 0) {
         const formatter = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
         const intervals = events
           .filter(({ isAllDay }) => !isAllDay)
-          .map(({ start, end }) => `${start.formatInterval()}-${end.formatInterval()}`);
+          .map(({ start, end }) => `${start.formatInterval("ha")}-${end.formatInterval()}`);
         const sentence = `I'm busy from ${formatter.format(intervals)}`;
+        console.log(sentence);
         navigator.clipboard.writeText(sentence);
       }
-    },
-    [events]
+    }, [events])
   );
 
   useCommand(

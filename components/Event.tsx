@@ -37,7 +37,7 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
         >
           {summary}
         </Summary>
-        {isExternal && <ExternalIcon size="1em" className="flex-shrink-0 text-gray-500" />}
+        {isExternal && <ExternalIcon size="1.2em" className="flex-shrink-0 text-gray-500" />}
       </div>
     </div>
   );
