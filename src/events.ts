@@ -1,5 +1,5 @@
-import useSWR from "swr";
 import dayjs from "@/dayjs";
+import useSWR from "swr";
 
 interface Attendee {
   email: string;
@@ -46,6 +46,7 @@ export function useEvents() {
       recurringEventIds[key].push(event.recurringEventId);
     }
     events[key] = events[key] || [];
+
     events[key].push({
       ...event,
       // @ts-ignore

@@ -11,7 +11,7 @@ import OtherDay from "components/OtherDay";
 import Today from "components/Today";
 import UserMenu from "components/UserMenu";
 import { useRouter } from "next/router";
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, useState } from "react";
 
 import { AuthStatus, useAuthStatus } from "../AuthStatus";
 
@@ -36,6 +36,7 @@ export default function Home() {
 }
 
 function Events({ events, className }: { className?: string; events: { [key: string]: IEvent[] } }) {
+  const [showDetails, setShowDetails] = useState<string | null>(null);
   const now = useClock();
 
   const days = range(0, 12 * 7);
@@ -54,9 +55,10 @@ function Events({ events, className }: { className?: string; events: { [key: str
           // @ts-ignore
           const currentEvents = events[key]?.sort(({ start: a }, { start: z }) => a.diff(z)) || [];
 
-          const numberOfRecurringMeetings = currentEvents.filter(
+          const recurringMeetings = currentEvents.filter(
             ({ isRecurringEvent, isAllDay }) => isRecurringEvent && !isAllDay
-          ).length;
+          );
+          const numberOfRecurringMeetings = recurringMeetings.length;
 
           const allDays: string[] = currentEvents.filter(({ isAllDay }) => isAllDay).map(({ summary }) => summary);
 
@@ -74,7 +76,13 @@ function Events({ events, className }: { className?: string; events: { [key: str
             );
           } else {
             return (
-              <OtherDay key={key} current={current} isOff={isOff} className="items-center pr-4">
+              <OtherDay
+                key={key}
+                current={current}
+                isOff={isOff}
+                className="items-center pr-4"
+                onClick={() => (key === showDetails ? setShowDetails(null) : setShowDetails(key))}
+              >
                 {numberOfRecurringMeetings > 0 && (
                   <div className="relative text-purple-500 mr-2 flex-shrink-0">
                     <RecurringIcon size="1.2em" />
@@ -88,7 +96,9 @@ function Events({ events, className }: { className?: string; events: { [key: str
                 <div className="flex flex-col min-w-0 flex-grow">
                   {currentEvents.map((event: IEvent) => {
                     if (!event.isAllDay) {
-                      return <OtherEvent className="mx-4" key={event.id} {...event} />;
+                      return (
+                        <OtherEvent className="mx-4" key={event.id} showDetails={showDetails === key} {...event} />
+                      );
                     }
                     return null;
                   })}

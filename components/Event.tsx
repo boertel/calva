@@ -10,7 +10,17 @@ import { useSettings } from "components/Settings";
 import Link from "next/link";
 import { CSSProperties } from "react";
 
-export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, ...rest }) {
+export function OtherEvent({
+  end,
+  start,
+  isRecurringEvent,
+  summary,
+  attendees,
+  showDetails,
+}: IEvent & {
+  showDetails?: boolean;
+}) {
+  // @ts-ignore
   const responseStatus = attendees.find(({ self }) => self)?.responseStatus;
   const { intervalFormat } = useSettings();
 
@@ -20,11 +30,12 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
     return domain !== user?.email.split("@")[1];
   });
 
-  if (isRecurringEvent) {
-    return null;
-  }
   return (
-    <div className="flex flex-row items-center">
+    <div
+      className={cn("flex flex-row items-center", {
+        hidden: !showDetails && isRecurringEvent,
+      })}
+    >
       <div className="flex items-center gap-2 min-w-0 w-full">
         <h5 className="text-gray-500 tabular-nums" title={duration(end.diff(start, "seconds")).format(["hH", "m MM"])}>
           {start.format(intervalFormat[0])}&nbsp;–&nbsp;{end.format(intervalFormat[1])}
@@ -44,6 +55,7 @@ export function OtherEvent({ end, start, isRecurringEvent, summary, attendees, .
 }
 
 export function TodayEvent({
+  id,
   end,
   start,
   summary,

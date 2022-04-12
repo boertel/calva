@@ -15,8 +15,6 @@ export function CommandProvider({ children, ...props }) {
       });
     }
     options.current.push({ name, callback });
-
-    console.log("add", options.current);
   }, []);
 
   const removeCommand = useCallback((name) => {

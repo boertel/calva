@@ -166,14 +166,19 @@ class Google {
             recurring
               .between(dayjs().subtract(2, "days").toDate(), dayjs().add(44, "days").toDate())
               .forEach((date) => {
-                const generatedStart = dayjs.parts({
-                  date: dayjs(date).format("YYYY-MM-DD"),
-                  time: event.start.time || "00:00:00",
-                });
-                const generatedEnd = dayjs.parts({
-                  date: dayjs(date).format("YYYY-MM-DD"),
-                  time: event.end.time || "23:59:00",
-                });
+                const generatedStart = dayjs
+                  .parts({
+                    date: dayjs(date).format("YYYY-MM-DD"),
+                    time: event.start.time || "00:00:00",
+                  })
+                  .tz(start.timeZone, true);
+                const generatedEnd = dayjs
+                  .parts({
+                    date: dayjs(date).format("YYYY-MM-DD"),
+                    time: event.end.time || "23:59:00",
+                  })
+                  .tz(start.timeZone, true);
+
                 events.push({
                   ...event,
                   start: generatedStart,
@@ -209,8 +214,8 @@ class Google {
           // regular event
           events.push({
             ...event,
-            start: dayjs.parts(event.start),
-            end: dayjs.parts(event.end),
+            start: dayjs.parts(event.start).tz(event.start.timeZone, true),
+            end: dayjs.parts(event.end).tz(event.end.timeZone, true),
           });
         }
       }
@@ -340,12 +345,12 @@ function parseEvent(
         }) || [],
     start: {
       date: dayjs(start.date || start.dateTime).format("YYYY-MM-DD"),
-      time: start.dateTime ? dayjs(start.dateTime).format("HH:mm") : null,
+      time: start.dateTime ? dayjs(start.dateTime).tz(start.timeZone).format("HH:mm") : null,
       timeZone: start.timeZone || null,
     },
     end: {
       date: dayjs(end.date || end.dateTime).format("YYYY-MM-DD"),
-      time: end.dateTime ? dayjs(end.dateTime).format("HH:mm") : null,
+      time: end.dateTime ? dayjs(end.dateTime).tz(start.timeZone).format("HH:mm") : null,
       timeZone: end.timeZone || null,
     },
   };

@@ -1,9 +1,8 @@
+import db from "@/db";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { google as googleapis } from "googleapis";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-
-import db from "@/db";
 
 export default NextAuth({
   adapter: PrismaAdapter(db),

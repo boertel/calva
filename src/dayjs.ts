@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { PluginFunc } from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import arraySupport from "dayjs/plugin/arraySupport";
 import customParseFormat from "dayjs/plugin/customParseFormat";
