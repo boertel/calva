@@ -1,13 +1,14 @@
-import { useCallback } from "react";
-import cuid from "cuid";
-import useSWR, { useSWRConfig } from "swr";
 import dayjs from "@/dayjs";
+import cuid from "cuid";
+import { useCallback } from "react";
+import useSWR, { useSWRConfig } from "swr";
 
 export type TodoStatus = "todo" | "done" | "delayed" | "cancelled";
 export type Todo = {
   id: string;
   text: string;
   status: TodoStatus;
+  createdAt?: Date;
   date?: string;
 };
 

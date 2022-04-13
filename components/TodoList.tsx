@@ -98,8 +98,8 @@ export function TodoList() {
         .filter(({ date, status }: Todo) =>
           showOnlyTodo ? status === "todo" : dayjs.utc(date).format("YYYY-MM-DD") === key
         )
-        .map(({ id, status, text }: Todo) => (
-          <TodoItem key={id} id={id} status={status} text={text} />
+        .map(({ id, status, text, createdAt }: Todo) => (
+          <TodoItem key={id} id={id} status={status} text={text} createdAt={createdAt} />
         ))}
       <li className="sticky bottom-0 px-2 pb-2 bg-black mt-2 flex items-center">
         <button className="px-3" onClick={() => setShowOnlyTodo((prev) => !prev)}>
@@ -121,7 +121,7 @@ export function TodoList() {
   );
 }
 
-function TodoItem({ status, text, id }: Todo) {
+function TodoItem({ status, text, id, createdAt }: Todo) {
   const { updateTodo } = useTodos(false);
 
   function onContextMenu(evt: React.MouseEvent<HTMLElement>) {
@@ -158,6 +158,8 @@ function TodoItem({ status, text, id }: Todo) {
     } as Todo);
   }
 
+  const diff = dayjs().diff(createdAt, "days");
+
   return (
     <li className="pl-2 pr-4">
       <Label
@@ -168,7 +170,19 @@ function TodoItem({ status, text, id }: Todo) {
           "hover:text-yellow-500": status === "todo",
         })}
       >
-        <Input onContextMenu={onContextMenu} onClick={onClick} onBlur={onBlur} onDelete={onDelete} status={status}>
+        <Input
+          onContextMenu={onContextMenu}
+          onClick={onClick}
+          onBlur={onBlur}
+          onDelete={onDelete}
+          status={status}
+          className={cn({
+            "text-lg": diff > 7,
+            "text-xl": diff > 14,
+            "text-2xl": diff > 21,
+            "text-3xl": diff > 28,
+          })}
+        >
           {text}
         </Input>
       </Label>
